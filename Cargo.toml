@@ -1,0 +1,63 @@
+[package]
+name = "espresso-raas-blueprint"
+version = "0.1.0"
+edition = "2021"
+description = "A Tangle Blueprint for Espressor RaaS"
+authors = ["Drew Stone <drewstone329@gmail.com>"]
+license = "MIT OR Apache-2.0"
+homepage = "https://tangle.tools"
+repository = "https://github.com/tangle-network/espresso-raas-blueprint"
+readme = "README.md"
+categories = ["cryptography", "cryptography::cryptocurrencies"]
+keywords = ["tangle", "blueprint", "avs"]
+rust-version = "1.81"
+
+[dependencies]
+anyhow = "1.0"
+blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = [
+    "tangle",
+    "macros",
+    "evm",
+] }
+chrono = "0.4"
+clap = { version = "4.4", features = ["derive"] }
+dockworker = { git = "https://github.com/tangle-network/dockworker", features = ["docker"] }
+firecracker-rs-sdk = { git = "https://github.com/xuehaonan27/firecracker-rs-sdk", features = ["_rt-tokio"] }
+lazy_static = "1.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+uuid = { version = "1.4", features = ["v4", "serde"] }
+thiserror = "1.0"
+async-trait = "0.1"
+tempfile = "3.10"
+reqwest = { version = "0.11", features = ["json"] }
+futures = "0.3"
+dotenv = "0.15.0"
+
+[build-dependencies]
+blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = ["build"] }
+
+[dev-dependencies]
+blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = ["testing", "tangle"] }
+color-eyre = "0.6.3"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "espresso-raas-blueprint"
+path = "src/main.rs"
+
+[package.metadata.blueprint]
+manager = { Evm = "EspressoRaaSBlueprint" }
+
+[[package.metadata.gadget.Native.sources]]
+owner = "tangle-network"
+repo = "espresso-raas-blueprint"
+tag = "0.1.0"
+binaries = [
+    { arch = "Amd64", os = "Linux", name = "amd64-linux-espresso-raas-blueprint-gadget" },
+    { arch = "Arm64", os = "Linux", name = "arm64-linux-espresso-raas-blueprint-gadget" },
+]

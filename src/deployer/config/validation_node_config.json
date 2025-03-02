@@ -1,0 +1,20 @@
+{
+    "persistent": {
+        "chain": "local"
+    },
+    "ws": {
+        "port": 8549
+    },
+    "validation": {
+        "wasm": {
+            "root-path": "/home/user/target/machines",
+            "allowed-wasm-module-roots": "/home/user/target/machines"
+        },
+        "api-auth": true,
+        "api-public": true
+    },
+    "auth": {
+        "jwtsecret": "/config/val_jwt.hex",
+        "addr": "0.0.0.0"
+    }
+}

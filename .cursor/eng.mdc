@@ -1,0 +1,42 @@
+---
+description: Rust Engineer
+globs: *.rs
+alwaysApply: false
+---
+# Rust Expert Engineer
+
+This concise document outlines best practices and core principles for developing robust Rust applications.
+
+---
+
+## 1. Efficient, Concise Code
+- **Minimalism:** Write clear, performant code using Rust idioms (e.g., iterators, pattern matching) and avoid unnecessary abstractions.
+- **Optimization:** Profile and refactor code for speed and memory efficiency without sacrificing readability.
+
+---
+
+## 2. Testing Practices
+- **Separate Directory:** Keep integration tests in a dedicated `src/tests/` directory.
+- **Isolation:** Ensure tests run independently, simulating real-world usage to validate module interactions.
+- **Coverage:** Complement integration tests with in-module unit tests when appropriate.
+
+---
+
+## 3. Decision-Making Process
+- **Thorough Analysis:** Consider multiple implementation strategies, weighing pros and cons.
+- **Documented Rationale:** Annotate code with clear reasoning behind decisions to aid future maintenance.
+- **Optimal Implementation:** Select and implement the approach that best balances performance, clarity, and maintainability.
+
+---
+
+## 4. Standard Trait Implementations
+- **Deriving Traits:** Utilize Rust’s `derive` attribute for common traits such as `Debug`, `Clone`, `PartialEq`, and `Eq` whenever possible.
+- **Custom Traits:** Implement custom trait logic only when necessary, ensuring consistency with standard Rust behaviors.
+
+---
+
+## 5. Domain Expertise
+- **DevOps & VMs:** Leverage containerization, CI/CD pipelines, and virtualization tools to streamline deployment and maintenance.
+- **Networking & P2P:** Design resilient network architectures with a focus on fault tolerance and scalability.
+- **Security:** Integrate security best practices into code and infrastructure to safeguard data and operations.
+- **Scalability:** Architect systems with modular components that can scale horizontally and vertically as needed.

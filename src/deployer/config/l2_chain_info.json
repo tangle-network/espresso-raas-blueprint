@@ -1,0 +1,52 @@
+[
+    {
+        "chain-name": "arb-dev-test",
+        "parent-chain-id": 421614,
+        "parent-chain-is-arbitrum": true,
+        "sequencer-url": "",
+        "secondary-forwarding-target": "",
+        "feed-url": "",
+        "secondary-feed-url": "",
+        "das-index-url": "",
+        "has-genesis-state": false,
+        "chain-config": {
+            "chainId": 10000000,
+            "homesteadBlock": 0,
+            "daoForkSupport": true,
+            "eip150Block": 0,
+            "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "eip155Block": 0,
+            "eip158Block": 0,
+            "byzantiumBlock": 0,
+            "constantinopleBlock": 0,
+            "petersburgBlock": 0,
+            "istanbulBlock": 0,
+            "muirGlacierBlock": 0,
+            "berlinBlock": 0,
+            "londonBlock": 0,
+            "clique": {
+                "period": 0,
+                "epoch": 0
+            },
+            "arbitrum": {
+                "EnableArbOS": true,
+                "AllowDebugPrecompiles": true,
+                "DataAvailabilityCommittee": false,
+                "InitialArbOSVersion": 32,
+                "InitialChainOwner": "INITIAL_CHAIN_OWNER_ADDRESS",
+                "GenesisBlockNum": 0
+            }
+        },
+        "rollup": {
+            "bridge": "BRIDGE_ADDRESS",
+            "inbox": "INBOX_ADDRESS",
+            "sequencer-inbox": "SEQUENCER_INBOX_ADDRESS",
+            "deployed-at": 100000000,
+            "rollup": "ROLLUP_ADDRESS",
+            "native-token": "0x0000000000000000000000000000000000000000",
+            "upgrade-executor": "UPGRADE_EXECUTOR_ADDRESS",
+            "validator-utils": "VALIDATOR_UTILS_ADDRESS",
+            "validator-wallet-creator": "VALIDATOR_WALLET_CREATOR_ADDRESS"
+        }
+    }
+]

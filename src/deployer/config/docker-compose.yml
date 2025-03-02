@@ -1,0 +1,26 @@
+version: "2.2"
+services:
+  nitro:
+    image: ghcr.io/espressosystems/nitro-espresso-integration/nitro-node:integration
+    container_name: nitro-node
+    ports:
+      - "8547:8547"
+      - "8548:8548"
+      - "8549:8549"
+    command: --conf.file /config/full_node.json
+    volumes:
+      - ./config:/config
+      - ./wasm:/home/user/wasm/
+      - ./database:/home/user/.arbitrum
+    depends_on:
+      - validation_node
+
+  validation_node:
+    image: ghcr.io/espressosystems/nitro-espresso-integration/nitro-node:integration
+    container_name: validation_node
+    ports:
+      - "8949:8549"
+    volumes:
+      - ./config:/config
+    entrypoint: /usr/local/bin/nitro-val
+    command: --conf.file /config/validation_node_config.json
