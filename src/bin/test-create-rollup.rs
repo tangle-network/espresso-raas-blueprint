@@ -1,5 +1,8 @@
 use anyhow::Result;
-use blueprint_sdk::logging;
+use blueprint_sdk::{
+    alloy::{primitives::Address, signers::local::PrivateKeySigner},
+    logging,
+};
 use clap::Parser;
 use dotenv::dotenv;
 use espresso_raas_blueprint::{create_rollup, RollupConfig, RollupConfigParams};
@@ -58,23 +61,31 @@ async fn main() -> Result<()> {
     // Parse command line arguments
     let args = Args::parse();
 
+    let deployer_key = std::env::var("DEPLOYER_PRIVATE_KEY").unwrap();
+    let validator_key = std::env::var("VALIDATOR_PRIVATE_KEY").unwrap();
+    let batch_poster_key = std::env::var("BATCH_POSTER_PRIVATE_KEY").unwrap();
+
+    let deployer: PrivateKeySigner = deployer_key.parse().unwrap();
+    let validator: PrivateKeySigner = validator_key.parse().unwrap();
+    let batch_poster: PrivateKeySigner = batch_poster_key.parse().unwrap();
+
     // Create rollup configuration
     let config = RollupConfigParams {
         chain_id: args.chain_id,
-        initial_chain_owner: args.owner.clone(),
-        validators: vec![args.validator.clone()],
-        batch_poster_address: args.batch_poster.clone(),
-        batch_poster_manager: args.batch_manager.clone(),
+        initial_chain_owner: deployer.address().to_string(),
+        validators: vec![validator.address().to_string()],
+        batch_poster_address: batch_poster.address().to_string(),
+        batch_poster_manager: batch_poster.address().to_string(),
         is_mainnet: args.mainnet,
     };
 
     // Log configuration details
     logging::info!("Creating rollup with configuration:");
     logging::info!("  Chain ID: {}", args.chain_id);
-    logging::info!("  Owner: {}", args.owner);
-    logging::info!("  Validator: {}", args.validator);
-    logging::info!("  Batch Poster: {}", args.batch_poster);
-    logging::info!("  Batch Manager: {}", args.batch_manager);
+    logging::info!("  Owner: {}", deployer.address().to_string());
+    logging::info!("  Validator: {}", validator.address().to_string());
+    logging::info!("  Batch Poster: {}", batch_poster.address().to_string());
+    logging::info!("  Batch Manager: {}", batch_poster.address().to_string());
     logging::info!(
         "  Network: {}",
         if args.mainnet { "Mainnet" } else { "Testnet" }

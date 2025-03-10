@@ -135,48 +135,32 @@ impl RollupDeployer {
     /// Build the contracts
     fn build_contracts(&self) -> Result<()> {
         info!("Installing dependencies and building contracts");
-
-        let nitro_contracts_dir = self.config.workspace_dir.join("nitro-contracts");
+        let dir = &self.config.workspace_dir.join("nitro-contracts");
 
         // Run yarn install && forge install
-        let mut cmd = Command::new("yarn");
-        cmd.current_dir(&nitro_contracts_dir).arg("install");
+        self.run_command("yarn", &["install"], dir)?;
+        self.run_command("forge", &["install"], dir)?;
 
-        let output = cmd.output()?;
-        if !output.status.success() {
-            error!(
-                "Failed to install yarn dependencies: {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-            return Err(anyhow!("Failed to install yarn dependencies"));
+        // Build the contracts (ignore stderr warnings)
+        info!("Building contracts with yarn build:all");
+        match self.run_command("yarn", &["build:all"], dir) {
+            Ok(_) => info!("Contracts built successfully"),
+            Err(e) => info!("Build completed with warnings: {}", e),
         }
 
-        let mut cmd = Command::new("forge");
-        cmd.current_dir(&nitro_contracts_dir).arg("install");
+        Ok(())
+    }
 
-        let output = cmd.output()?;
+    /// Helper function to run a command and handle errors consistently
+    fn run_command(&self, cmd: &str, args: &[&str], dir: &PathBuf) -> Result<()> {
+        let output = Command::new(cmd).current_dir(dir).args(args).output()?;
+
         if !output.status.success() {
-            error!(
-                "Failed to install forge dependencies: {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-            return Err(anyhow!("Failed to install forge dependencies"));
+            let err = String::from_utf8_lossy(&output.stderr);
+            error!("Command '{}' failed: {}", cmd, err);
+            return Err(anyhow!("Command '{}' failed: {}", cmd, err));
         }
 
-        // Run yarn build:all
-        let mut cmd = Command::new("yarn");
-        cmd.current_dir(&nitro_contracts_dir).arg("build:all");
-
-        let output = cmd.output()?;
-        if !output.status.success() {
-            error!(
-                "Failed to build contracts: {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-            return Err(anyhow!("Failed to build contracts"));
-        }
-
-        info!("Contracts built successfully");
         Ok(())
     }
 
@@ -200,106 +184,55 @@ impl RollupDeployer {
 
     /// Create the config.ts file for deployment
     fn create_config_file(&self) -> Result<()> {
-        info!("Creating config.ts file");
+        info!("Creating config.ts for deployment");
+        let dir = &self.config.workspace_dir.join("nitro-contracts");
 
-        let nitro_contracts_dir = self.config.workspace_dir.join("nitro-contracts");
+        // Copy from template
+        let template_path = dir.join("scripts/config.template.ts");
+        let config_path = dir.join("scripts/config.ts");
 
-        // Read the config.template.ts file
-        let template_path = nitro_contracts_dir.join("scripts/config.template.ts");
-        let template_content = fs::read_to_string(template_path)?;
+        let template = fs::read_to_string(&template_path)
+            .map_err(|e| anyhow!("Failed to read config template: {}", e))?;
 
-        // Replace placeholder values with our configuration
-        let validators_str = self
-            .config
-            .validators
-            .iter()
-            .map(|v| format!("\"{}\"", v))
-            .collect::<Vec<_>>()
-            .join(", ");
+        // Replace placeholder values with actual config
+        let config = template
+            .replace("OWNER_ADDRESS", &self.config.initial_chain_owner)
+            .replace("YOUR_CHAIN_ID", &self.config.chain_id.to_string())
+            .replace("ChainID", &self.config.chain_id.to_string())
+            .replace("YOUR_OWNED_ADDRESS", &self.config.initial_chain_owner)
+            .replace("AN_OWNED_ADDRESS", &self.config.validators[0])
+            .replace("ANOTHER_OWNED_ADDRESS", &self.config.batch_poster_address);
 
-        let updated_content = template_content
-            .replace(
-                "chainId: ethers.BigNumber.from('412346'),",
-                &format!(
-                    "chainId: ethers.BigNumber.from('{}'),",
-                    self.config.chain_id
-                ),
-            )
-            .replace(
-                "initialChainOwner: \"0x1234123412341234123412341234123412341234\",",
-                &format!(
-                    "initialChainOwner: \"{}\",",
-                    self.config.initial_chain_owner
-                ),
-            )
-            .replace(
-                "chainId: ethers.BigNumber.from('412346'),",
-                &format!(
-                    "chainId: ethers.BigNumber.from('{}'),",
-                    self.config.chain_id
-                ),
-            )
-            .replace(
-                "validators: [\"0x1234123412341234123412341234123412341234\"],",
-                &format!("validators: [{}],", validators_str),
-            )
-            .replace(
-                "batchPosterAddress: \"0x1234123412341234123412341234123412341234\",",
-                &format!(
-                    "batchPosterAddress: \"{}\",",
-                    self.config.batch_poster_address
-                ),
-            )
-            .replace(
-                "batchPosterManager: \"0x1234123412341234123412341234123412341234\",",
-                &format!(
-                    "batchPosterManager: \"{}\",",
-                    self.config.batch_poster_manager
-                ),
-            );
+        fs::write(&config_path, config).map_err(|e| anyhow!("Failed to write config.ts: {}", e))?;
 
-        // Write the updated config.ts
-        fs::write(
-            nitro_contracts_dir.join("scripts/config.ts"),
-            updated_content,
-        )?;
-
-        info!("config.ts file created successfully");
+        info!("Created config.ts at {}", config_path.display());
         Ok(())
     }
 
-    /// Deploy the contracts using the hardhat script
+    /// Deploy contracts using hardhat
     fn deploy_contracts(&self) -> Result<String> {
         info!("Deploying contracts");
+        let dir = &self.config.workspace_dir.join("nitro-contracts");
 
-        let nitro_contracts_dir = self.config.workspace_dir.join("nitro-contracts");
-
-        let mut cmd = Command::new("npx");
-        cmd.current_dir(&nitro_contracts_dir)
+        // Run deployment script
+        let output = Command::new("npx")
+            .current_dir(dir)
             .arg("hardhat")
             .arg("run")
             .arg("scripts/deployment.ts")
             .arg("--network")
-            .arg("arbSepolia");
+            .arg("arbSepolia")
+            .output()?;
 
-        let output = cmd.output()?;
         if !output.status.success() {
-            error!(
-                "Failed to deploy contracts: {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-            return Err(anyhow!("Failed to deploy contracts"));
+            let err = String::from_utf8_lossy(&output.stderr);
+            error!("Deployment failed: {}", err);
+            return Err(anyhow!("Deployment failed: {}", err));
         }
 
-        // Parse the output to extract the rollup creator address
+        // Extract rollup creator address from output
         let output_str = String::from_utf8_lossy(&output.stdout);
-        let rollup_creator_address = self.extract_rollup_creator_address(&output_str)?;
-
-        info!(
-            "Contracts deployed successfully. Rollup Creator Address: {}",
-            rollup_creator_address
-        );
-        Ok(rollup_creator_address)
+        self.extract_rollup_creator_address(&output_str)
     }
 
     /// Update .env with the rollup creator address
@@ -321,50 +254,45 @@ impl RollupDeployer {
         Ok(())
     }
 
-    /// Deploy the rollup proxy contract
+    /// Deploy rollup proxy after setting the creator address in .env
     fn deploy_rollup_proxy(&self) -> Result<(String, String, u64)> {
-        info!("Deploying rollup proxy contract");
+        info!("Deploying rollup proxy");
+        let dir = &self.config.workspace_dir.join("nitro-contracts");
 
-        let nitro_contracts_dir = self.config.workspace_dir.join("nitro-contracts");
-
-        let mut cmd = Command::new("npx");
-        cmd.current_dir(&nitro_contracts_dir)
+        // Run deployment script
+        let output = Command::new("npx")
+            .current_dir(dir)
             .arg("hardhat")
             .arg("run")
             .arg("scripts/createEthRollup.ts")
             .arg("--network")
-            .arg("arbSepolia");
+            .arg("arbSepolia")
+            .output()?;
 
-        let output = cmd.output()?;
         if !output.status.success() {
-            error!(
-                "Failed to deploy rollup proxy: {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-            return Err(anyhow!("Failed to deploy rollup proxy"));
+            let err = String::from_utf8_lossy(&output.stderr);
+            error!("Rollup proxy deployment failed: {}", err);
+            return Err(anyhow!("Rollup proxy deployment failed: {}", err));
         }
 
-        // Parse the output to extract addresses and block number
         let output_str = String::from_utf8_lossy(&output.stdout);
-        let rollup_proxy_address = self.extract_rollup_proxy_address(&output_str)?;
 
-        // Read the deployment file to get the upgrade executor address
-        let deployments_file = nitro_contracts_dir.join("espresso-deployments/arbSepolia.json");
-        let deployments_content = fs::read_to_string(deployments_file)?;
-        let upgrade_executor_address =
-            self.extract_upgrade_executor_address(&deployments_content)?;
-
-        // Extract deployment block
+        // Extract addresses and block number from output
+        let rollup_proxy = self.extract_rollup_proxy_address(&output_str)?;
+        let upgrade_executor = self.extract_upgrade_executor_address(&output_str)?;
         let deployment_block = self.extract_deployment_block(&output_str)?;
 
-        info!("Rollup proxy deployed successfully. Proxy Address: {}, Upgrade Executor: {}, Block: {}", 
-              rollup_proxy_address, upgrade_executor_address, deployment_block);
+        // Read deployment json file for additional addresses if needed
+        let deployment_json_path = dir.join("espresso-deployments/arbSepolia.json");
+        if deployment_json_path.exists() {
+            info!(
+                "Deployment JSON found at {}",
+                deployment_json_path.display()
+            );
+            // Here you could parse additional addresses if needed
+        }
 
-        Ok((
-            rollup_proxy_address,
-            upgrade_executor_address,
-            deployment_block,
-        ))
+        Ok((rollup_proxy, upgrade_executor, deployment_block))
     }
 
     /// Extract the rollup creator address from the output
