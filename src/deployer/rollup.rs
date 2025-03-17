@@ -137,15 +137,53 @@ impl RollupDeployer {
         info!("Installing dependencies and building contracts");
         let dir = &self.config.workspace_dir.join("nitro-contracts");
 
-        // Run yarn install && forge install
+        // First check if we're on develop branch
+        info!("Verifying we're on the develop branch");
+        let output = Command::new("git")
+            .current_dir(dir)
+            .args(["branch", "--show-current"])
+            .output()?;
+
+        let current_branch = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        info!("Current branch: {}", current_branch);
+        if current_branch != NITRO_CONTRACTS_BRANCH {
+            error!(
+                "Not on {} branch, currently on {}",
+                NITRO_CONTRACTS_BRANCH, current_branch
+            );
+            return Err(anyhow!("Not on {} branch", NITRO_CONTRACTS_BRANCH));
+        }
+
+        // Run yarn install for package dependencies
+        info!("Installing yarn dependencies");
         self.run_command("yarn", &["install"], dir)?;
+
+        // Install forge dependencies
+        info!("Installing forge dependencies");
         self.run_command("forge", &["install"], dir)?;
 
-        // Build the contracts (ignore stderr warnings)
-        info!("Building contracts with yarn build:all");
-        match self.run_command("yarn", &["build:all"], dir) {
-            Ok(_) => info!("Contracts built successfully"),
-            Err(e) => info!("Build completed with warnings: {}", e),
+        // Clean any previous builds
+        info!("Cleaning previous builds with forge clean");
+        self.run_command("forge", &["clean"], dir)?;
+
+        // Build using forge directly, skipping tests
+        info!("Building contracts with forge build --skip test");
+        let output = Command::new("forge")
+            .current_dir(dir)
+            .args(["build", "--skip", "test"])
+            .output()?;
+
+        if !output.status.success() {
+            let err = String::from_utf8_lossy(&output.stderr);
+            // Log but don't treat warnings as errors
+            if err.contains("Warning:") && !err.contains("Error:") {
+                info!("Build completed with warnings: {}", err);
+            } else {
+                error!("Forge build failed: {}", err);
+                return Err(anyhow!("Forge build failed: {}", err));
+            }
+        } else {
+            info!("Contracts built successfully with forge build");
         }
 
         Ok(())
