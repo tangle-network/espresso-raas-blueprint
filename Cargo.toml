@@ -1,24 +1,57 @@
 [package]
 name = "espresso-raas-blueprint"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 description = "A Tangle Blueprint for Espressor RaaS"
-authors = ["Drew Stone <drewstone329@gmail.com>"]
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+tokio.workspace = true
+chrono.workspace = true
+dockworker.workspace = true
+blueprint-sdk = { workspace = true, features = ["std", "tangle", "tracing", "macros"] }
+serde = { workspace = true, features = ["alloc"] }
+serde_json.workspace = true
+uuid = { workspace = true, features = ["v4", "serde"] }
+lazy_static.workspace = true
+
+[dev-dependencies]
+blueprint-sdk = { workspace = true, features = ["std", "testing", "tangle"] }
+color-eyre.workspace = true
+
+[workspace]
+members = ["bin", "."]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+description = "Espresso RaaS Blueprint built with Tangle Blueprint SDK"
+authors = ["Webb Technologies Inc."]
 license = "MIT OR Apache-2.0"
-homepage = "https://tangle.tools"
+homepage = "https://github.com/tangle-network/espresso-raas-blueprint"
 repository = "https://github.com/tangle-network/espresso-raas-blueprint"
 readme = "README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies"]
 keywords = ["tangle", "blueprint", "avs"]
-rust-version = "1.81"
+rust-version = "1.85"
 
-[dependencies]
-anyhow = "1.0"
-blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = [
-    "tangle",
-    "macros",
-    "evm",
-] }
+[workspace.dependencies]
+espresso-raas-blueprint = { path = "./" }
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false }
+thiserror = "2.0.12"
+color-eyre = "0.6.3"
+anyhow = "1.0.97"
+blueprint-sdk = { git = "https://github.com/tangle-network/blueprint", default-features = false }
 chrono = "0.4"
 clap = { version = "4.4", features = ["derive"] }
 dockworker = { git = "https://github.com/tangle-network/dockworker", features = ["docker"] }
@@ -26,40 +59,12 @@ firecracker-rs-sdk = { git = "https://github.com/xuehaonan27/firecracker-rs-sdk"
 lazy_static = "1.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "1.0", features = ["full"] }
-tracing = "0.1"
-uuid = { version = "1.4", features = ["v4", "serde"] }
-thiserror = "1.0"
+tokio = { version = "1.44.1", features = ["full"] }
+uuid = { version = "1.16.0", features = ["v4", "serde"] }
 async-trait = "0.1"
 tempfile = "3.10"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.12.15", features = ["json"] }
 futures = "0.3"
 dotenv = "0.15.0"
 regex = "1.10.2"
 walkdir = "2.4.0"
-
-[build-dependencies]
-blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = ["build"] }
-
-[dev-dependencies]
-blueprint-sdk = { git = "https://github.com/tangle-network/gadget", features = ["testing", "tangle"] }
-color-eyre = "0.6.3"
-
-[lib]
-path = "src/lib.rs"
-
-[[bin]]
-name = "espresso-raas-blueprint"
-path = "src/main.rs"
-
-[package.metadata.blueprint]
-manager = { Evm = "EspressoRaaSBlueprint" }
-
-[[package.metadata.gadget.Native.sources]]
-owner = "tangle-network"
-repo = "espresso-raas-blueprint"
-tag = "0.1.0"
-binaries = [
-    { arch = "Amd64", os = "Linux", name = "amd64-linux-espresso-raas-blueprint-gadget" },
-    { arch = "Arm64", os = "Linux", name = "arm64-linux-espresso-raas-blueprint-gadget" },
-]

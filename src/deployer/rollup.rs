@@ -1,10 +1,12 @@
+use blueprint_sdk as sdk;
+
 use crate::RollupConfig;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
+use sdk::{error, info};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
-use tracing::{error, info};
 
 // Constants for deployment
 const NITRO_CONTRACTS_REPO: &str = "https://github.com/EspressoSystems/nitro-contracts.git";

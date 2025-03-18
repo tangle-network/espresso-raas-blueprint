@@ -1,14 +1,16 @@
+use blueprint_sdk as sdk;
+
+use crate::RollupConfig;
 use crate::deployer::config::ConfigGenerator;
 use crate::deployer::rollup::{DeploymentConfig, RollupDeployer};
 use crate::docker::espresso::EspressoDockerManager;
-use crate::RollupConfig;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
+use sdk::{error, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{error, info};
 
 /// Status of a rollup
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -77,7 +79,7 @@ impl RollupManager {
     /// Create a new rollup manager
     pub fn new() -> Self {
         Self {
-            rollups: Arc::new(RwLock::new(HashMap::new())),
+            rollups: Arc::new(RwLock::const_new(HashMap::new())),
         }
     }
 

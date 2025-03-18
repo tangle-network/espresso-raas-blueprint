@@ -1,0 +1,37 @@
+[package]
+name = "espresso-raas-blueprint-cli"
+version.workspace = true
+edition.workspace = true
+description = "A Tangle Blueprint for Espresso RaaS"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+rust-version.workspace = true
+
+
+[dependencies]
+tracing.workspace = true
+anyhow = { workspace = true }
+tokio = { workspace = true, features = ["full", "rt-multi-thread"] }
+tracing-subscriber = { workspace = true, features = ["parking_lot", "env-filter"] }
+
+espresso-raas-blueprint.workspace = true
+blueprint-sdk = { workspace = true, features = ["std", "tangle"] }
+
+[build-dependencies]
+blueprint-sdk = { workspace = true, features = ["macros", "build"] }
+espresso-raas-blueprint.workspace = true
+serde_json.workspace = true
+
+[[package.metadata.gadget.Native.sources]]
+owner = "tangle-network"
+repo = "espresso-raas-blueprint"
+tag = "0.1.0"
+binaries = [
+  { arch = "Amd64", os = "Linux", name = "amd64-linux-espresso-raas-blueprint-gadget" },
+  { arch = "Arm64", os = "Linux", name = "arm64-linux-espresso-raas-blueprint-gadget" },
+]

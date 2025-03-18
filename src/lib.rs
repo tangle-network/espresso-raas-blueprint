@@ -1,5 +1,7 @@
-use blueprint_sdk::config::GadgetConfiguration;
-use blueprint_sdk::macros::contexts::{ServicesContext, TangleClientContext};
+use blueprint_sdk as sdk;
+
+use sdk::macros::context::{ServicesContext, TangleClientContext};
+use sdk::runner::config::BlueprintEnvironment;
 use serde::{Deserialize, Serialize};
 
 pub mod deployer;
@@ -9,18 +11,21 @@ pub use deployer::DeploymentResult;
 
 // Re-export Docker functionality
 pub use docker::{
-    create_rollup, delete_rollup, get_rollup_status, list_rollups, start_rollup, stop_rollup,
     EspressoDockerManager, RollupInfo, RollupManager, RollupStatus as DockerRollupStatus,
+    create_rollup, delete_rollup, get_rollup_status, list_rollups, start_rollup, stop_rollup,
 };
 
 // Service context for our blueprint
 #[derive(Clone, TangleClientContext, ServicesContext)]
 pub struct ServiceContext {
     #[config]
-    pub config: GadgetConfiguration,
-    #[call_id]
-    pub call_id: Option<u64>,
-    pub service_id: u64,
+    pub config: BlueprintEnvironment,
+}
+
+impl ServiceContext {
+    pub fn new(config: BlueprintEnvironment) -> Self {
+        Self { config }
+    }
 }
 
 /// Network type for the rollup
