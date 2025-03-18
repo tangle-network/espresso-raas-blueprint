@@ -2483,6 +2483,7 @@ source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2
 dependencies = [
  "proc-macro2",
  "quote",
+ "serde_json",
  "syn 2.0.100",
 ]
 
@@ -2546,6 +2547,8 @@ name = "blueprint-sdk"
 version = "0.1.0"
 source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
 dependencies = [
+ "alloy",
+ "alloy-json-abi",
  "blueprint-build-utils",
  "blueprint-core",
  "blueprint-evm-extra",
@@ -5109,6 +5112,7 @@ dependencies = [
  "anyhow",
  "blueprint-sdk",
  "chrono",
+ "clap",
  "color-eyre",
  "dockworker",
  "lazy_static",
@@ -6163,6 +6167,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "gadget-anvil-testing-utils"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "alloy-provider",
+ "alloy-rpc-types",
+ "alloy-rpc-types-eth",
+ "alloy-transport",
+ "blueprint-core",
+ "url",
+]
+
+[[package]]
 name = "gadget-chain-setup"
 version = "0.1.0"
 source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
@@ -6653,6 +6671,7 @@ name = "gadget-testing-utils"
 version = "0.1.0"
 source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
 dependencies = [
+ "gadget-anvil-testing-utils",
  "gadget-core-testing-utils",
  "gadget-tangle-testing-utils",
 ]

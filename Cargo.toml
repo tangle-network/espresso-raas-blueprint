@@ -23,9 +23,39 @@ serde_json.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
 lazy_static.workspace = true
 
+clap = { workspace = true, features = ["derive"], optional = true }
+
 [dev-dependencies]
 blueprint-sdk = { workspace = true, features = ["std", "testing", "tangle"] }
 color-eyre.workspace = true
+
+[features]
+examples = ["blueprint-sdk/evm", "dep:clap"]
+
+[[example]]
+name = "create-rollup"
+path = "examples/create-rollup.rs"
+required-features = ["examples"]
+
+[[example]]
+name = "list-rollups"
+path = "examples/list-rollups.rs"
+required-features = ["examples"]
+
+[[example]]
+name = "start-rollup"
+path = "examples/start-rollup.rs"
+required-features = ["examples"]
+
+[[example]]
+name = "stop-rollup"
+path = "examples/stop-rollup.rs"
+required-features = ["examples"]
+
+[[example]]
+name = "get-status"
+path = "examples/get-status.rs"
+required-features = ["examples"]
 
 [workspace]
 members = ["bin", "."]
