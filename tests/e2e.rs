@@ -1,8 +1,10 @@
 use blueprint_sdk as sdk;
+use blueprint_sdk::testing::utils::tangle::harness::SetupServicesOpts;
 use espresso_raas_blueprint::docker::{
     create_docker_rollup, delete_docker_rollup, start_docker_rollup, stop_docker_rollup,
 };
 use espresso_raas_blueprint::{RollupConfigParams, ServiceContext};
+use hex_literal::hex;
 
 use sdk::Job;
 use sdk::tangle::layers::TangleLayer;
@@ -17,8 +19,26 @@ async fn test_rollup_creation() -> color_eyre::Result<()> {
     let temp_dir = tempfile::TempDir::new()?;
     let harness = tangle::TangleTestHarness::setup(temp_dir).await?;
 
+    // Create a sample rollup configuration
+    let rollup_config = RollupConfigParams {
+        chain_id: 42,
+        initial_chain_owner: hex!("123456789abcdef0123456789abcdef012345678"),
+        validators: vec![
+            hex!("abcdef0123456789abcdef0123456789abcdef01"),
+            hex!("9876543210abcdef9876543210abcdef98765432"),
+        ]
+        .into(),
+        batch_poster_address: hex!("2468ace02468ace02468ace02468ace02468ace0"),
+        batch_poster_manager: hex!("1357bdf91357bdf91357bdf91357bdf91357bdf9"),
+        is_mainnet: false,
+    };
     // Setup service
-    let (mut test_env, service_id, _) = harness.setup_services::<1>(false).await?;
+    let (mut test_env, service_id, _) = harness
+        .setup_services_with_options::<1>(SetupServicesOpts {
+            exit_after_registration: false,
+            ..Default::default()
+        })
+        .await?;
     test_env.initialize().await?;
 
     // Register the job handlers for Docker rollups
@@ -47,19 +67,6 @@ async fn test_rollup_creation() -> color_eyre::Result<()> {
 
     // Start the test environment
     test_env.start_with_contexts(contexts).await?;
-
-    // Create a sample rollup configuration
-    let rollup_config = RollupConfigParams {
-        chain_id: 42,
-        initial_chain_owner: "0x123456789abcdef0123456789abcdef012345678".to_string(),
-        validators: vec![
-            "0xabcdef0123456789abcdef0123456789abcdef01".to_string(),
-            "0x9876543210abcdef9876543210abcdef98765432".to_string(),
-        ],
-        batch_poster_address: "0x2468ace02468ace02468ace02468ace02468ace0".to_string(),
-        batch_poster_manager: "0x1357bdf91357bdf91357bdf91357bdf91357bdf9".to_string(),
-        is_mainnet: false,
-    };
 
     // Serialize the config for the job input
     let config_bytes = serde_json::to_vec(&rollup_config)?;

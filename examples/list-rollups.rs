@@ -10,7 +10,7 @@ struct Args {}
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize logging
-    logging::setup_log();
+    setup_log();
 
     // Log the operation
     sdk::info!("Listing all rollups");

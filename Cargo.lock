@@ -390,7 +390,7 @@ dependencies = [
  "cfg-if",
  "const-hex",
  "derive_more 0.99.19",
- "hex-literal",
+ "hex-literal 0.4.1",
  "itoa",
  "proptest",
  "rand 0.8.5",
@@ -2424,17 +2424,234 @@ dependencies = [
 ]
 
 [[package]]
+name = "blueprint-anvil-testing-utils"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "alloy-provider",
+ "alloy-rpc-types",
+ "alloy-rpc-types-eth",
+ "alloy-transport",
+ "blueprint-core",
+ "url",
+]
+
+[[package]]
 name = "blueprint-build-utils"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
- "gadget-std",
+ "blueprint-std",
+]
+
+[[package]]
+name = "blueprint-chain-setup"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-chain-setup-anvil",
+ "blueprint-chain-setup-common",
+ "blueprint-chain-setup-tangle",
+]
+
+[[package]]
+name = "blueprint-chain-setup-anvil"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-contract",
+ "alloy-provider",
+ "alloy-rpc-types",
+ "alloy-rpc-types-eth",
+ "blueprint-core",
+ "blueprint-core-testing-utils",
+ "blueprint-keystore",
+ "blueprint-std",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "testcontainers",
+ "thiserror 2.0.12",
+ "tokio",
+]
+
+[[package]]
+name = "blueprint-chain-setup-common"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-signer-local",
+ "blueprint-clients",
+ "blueprint-contexts",
+ "blueprint-crypto",
+ "blueprint-crypto-tangle-pair-signer",
+ "blueprint-keystore",
+ "blueprint-networking",
+ "blueprint-std",
+ "blueprint-tangle-extra",
+ "color-eyre",
+ "sp-core",
+ "tangle-subxt",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-chain-setup-tangle"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-json-abi",
+ "alloy-network",
+ "alloy-primitives 0.8.23",
+ "alloy-provider",
+ "alloy-rpc-types",
+ "alloy-rpc-types-eth",
+ "alloy-signer-local",
+ "alloy-sol-types 0.8.23",
+ "alloy-transport",
+ "blueprint-chain-setup-common",
+ "blueprint-clients",
+ "blueprint-contexts",
+ "blueprint-core",
+ "blueprint-crypto",
+ "blueprint-crypto-tangle-pair-signer",
+ "blueprint-keystore",
+ "blueprint-networking",
+ "blueprint-std",
+ "blueprint-tangle-extra",
+ "cargo_metadata 0.18.1",
+ "color-eyre",
+ "dialoguer",
+ "dirs 6.0.0",
+ "indicatif",
+ "reqwest 0.12.15",
+ "serde_json",
+ "sp-core",
+ "tangle-subxt",
+ "thiserror 2.0.12",
+ "tracing",
+]
+
+[[package]]
+name = "blueprint-client-core"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "auto_impl",
+ "blueprint-std",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-client-eigenlayer"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-contract",
+ "alloy-network",
+ "alloy-primitives 0.8.23",
+ "alloy-provider",
+ "alloy-transport",
+ "blueprint-client-core",
+ "blueprint-evm-extra",
+ "blueprint-runner",
+ "blueprint-std",
+ "eigensdk",
+ "num-bigint",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-util",
+ "url",
+]
+
+[[package]]
+name = "blueprint-client-evm"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-consensus",
+ "alloy-json-rpc",
+ "alloy-network",
+ "alloy-primitives 0.8.23",
+ "alloy-provider",
+ "alloy-pubsub",
+ "alloy-rlp",
+ "alloy-rpc-types",
+ "alloy-rpc-types-eth",
+ "alloy-transport",
+ "blueprint-client-core",
+ "blueprint-core",
+ "blueprint-metrics-rpc-calls",
+ "blueprint-std",
+ "hex",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.12",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "blueprint-client-tangle"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "auto_impl",
+ "blueprint-client-core",
+ "blueprint-core",
+ "blueprint-crypto-sp-core",
+ "blueprint-keystore",
+ "blueprint-runner",
+ "blueprint-std",
+ "serde",
+ "serde_json",
+ "sp-core",
+ "tangle-subxt",
+ "thiserror 2.0.12",
+ "tokio",
+]
+
+[[package]]
+name = "blueprint-clients"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-client-core",
+ "blueprint-client-eigenlayer",
+ "blueprint-client-evm",
+ "blueprint-client-tangle",
+ "blueprint-std",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-context-derive"
+version = "0.3.1"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
+
+[[package]]
+name = "blueprint-contexts"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-clients",
+ "blueprint-keystore",
+ "blueprint-networking",
+ "blueprint-runner",
+ "blueprint-std",
+ "tangle-subxt",
 ]
 
 [[package]]
 name = "blueprint-core"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "bytes",
  "futures-util",
@@ -2446,9 +2663,178 @@ dependencies = [
 ]
 
 [[package]]
+name = "blueprint-core-testing-utils"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-clients",
+ "blueprint-core",
+ "blueprint-keystore",
+ "blueprint-router",
+ "blueprint-runner",
+ "cargo_toml",
+ "thiserror 2.0.12",
+ "tracing",
+ "tracing-subscriber 0.3.19",
+ "url",
+]
+
+[[package]]
+name = "blueprint-crypto"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-crypto-bls",
+ "blueprint-crypto-bn254",
+ "blueprint-crypto-core",
+ "blueprint-crypto-ed25519",
+ "blueprint-crypto-hashing",
+ "blueprint-crypto-k256",
+ "blueprint-crypto-sp-core",
+ "blueprint-crypto-sr25519",
+ "blueprint-crypto-tangle-pair-signer",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-bls"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "ark-serialize 0.5.0",
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "hex",
+ "paste",
+ "serde",
+ "serde_bytes",
+ "thiserror 2.0.12",
+ "tnt-bls",
+]
+
+[[package]]
+name = "blueprint-crypto-bn254"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "ark-bn254",
+ "ark-ec 0.5.0",
+ "ark-ff 0.5.0",
+ "ark-serialize 0.5.0",
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "hex",
+ "num-bigint",
+ "num-traits",
+ "serde",
+ "serde_bytes",
+ "sha2 0.10.8",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-core"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-std",
+ "clap",
+ "serde",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-ed25519"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "ed25519-zebra",
+ "hex",
+ "serde",
+ "serde_bytes",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-hashing"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blake3",
+ "blueprint-std",
+ "sha2 0.10.8",
+ "sha3",
+]
+
+[[package]]
+name = "blueprint-crypto-k256"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "alloy-signer-local",
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "hex",
+ "k256",
+ "serde",
+ "serde_bytes",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-sp-core"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "hex",
+ "paste",
+ "serde",
+ "serde_bytes",
+ "sp-core",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-sr25519"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "hex",
+ "schnorrkel",
+ "serde",
+ "serde_bytes",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "blueprint-crypto-tangle-pair-signer"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "alloy-signer-local",
+ "blueprint-crypto-core",
+ "blueprint-crypto-sp-core",
+ "blueprint-std",
+ "k256",
+ "serde",
+ "sp-core",
+ "sp-runtime",
+ "tangle-subxt",
+ "thiserror 2.0.12",
+]
+
+[[package]]
 name = "blueprint-evm-extra"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "alloy-consensus",
  "alloy-network",
@@ -2463,11 +2849,11 @@ dependencies = [
  "alloy-transport-http",
  "async-stream",
  "blueprint-core",
+ "blueprint-std",
  "bytes",
  "document-features",
  "futures",
  "futures-util",
- "gadget-std",
  "pin-project-lite",
  "serde_json",
  "thiserror 2.0.12",
@@ -2477,9 +2863,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "blueprint-keystore"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-network",
+ "alloy-primitives 0.8.23",
+ "alloy-signer",
+ "alloy-signer-local",
+ "ark-bn254",
+ "ark-ec 0.5.0",
+ "ark-ff 0.5.0",
+ "ark-serialize 0.5.0",
+ "blake3",
+ "blueprint-crypto",
+ "blueprint-std",
+ "ed25519-zebra",
+ "eigensdk",
+ "hex",
+ "k256",
+ "parking_lot",
+ "paste",
+ "ripemd",
+ "rust-bls-bn254",
+ "schnorrkel",
+ "serde",
+ "serde_bytes",
+ "serde_json",
+ "sp-core",
+ "sp-io",
+ "tangle-subxt",
+ "thiserror 2.0.12",
+ "tnt-bls",
+ "tokio",
+ "zeroize",
+]
+
+[[package]]
 name = "blueprint-macros"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2488,9 +2911,48 @@ dependencies = [
 ]
 
 [[package]]
+name = "blueprint-metrics-rpc-calls"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "metrics",
+]
+
+[[package]]
+name = "blueprint-networking"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "anyhow",
+ "auto_impl",
+ "bincode",
+ "blake3",
+ "blueprint-crypto",
+ "blueprint-crypto-core",
+ "blueprint-std",
+ "crossbeam-channel",
+ "dashmap",
+ "futures",
+ "hex",
+ "itertools 0.14.0",
+ "k256",
+ "libp2p",
+ "libsecp256k1",
+ "lru-mem",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
 name = "blueprint-producers-extra"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "blueprint-core",
  "document-features",
@@ -2500,7 +2962,7 @@ dependencies = [
 [[package]]
 name = "blueprint-router"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "blueprint-core",
  "bytes",
@@ -2514,11 +2976,15 @@ dependencies = [
 [[package]]
 name = "blueprint-runner"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "blueprint-core",
+ "blueprint-crypto",
  "blueprint-evm-extra",
+ "blueprint-keystore",
+ "blueprint-networking",
  "blueprint-router",
+ "blueprint-std",
  "blueprint-tangle-extra",
  "clap",
  "crossbeam-channel",
@@ -2527,10 +2993,6 @@ dependencies = [
  "futures",
  "futures-core",
  "futures-util",
- "gadget-crypto",
- "gadget-keystore",
- "gadget-networking",
- "gadget-std",
  "k256",
  "libp2p",
  "serde",
@@ -2545,28 +3007,28 @@ dependencies = [
 [[package]]
 name = "blueprint-sdk"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "alloy",
  "alloy-json-abi",
  "blueprint-build-utils",
+ "blueprint-chain-setup",
+ "blueprint-clients",
+ "blueprint-context-derive",
+ "blueprint-contexts",
  "blueprint-core",
+ "blueprint-crypto",
+ "blueprint-crypto-tangle-pair-signer",
  "blueprint-evm-extra",
+ "blueprint-keystore",
  "blueprint-macros",
  "blueprint-producers-extra",
  "blueprint-router",
  "blueprint-runner",
+ "blueprint-std",
  "blueprint-tangle-extra",
+ "blueprint-testing-utils",
  "document-features",
- "gadget-chain-setup",
- "gadget-clients",
- "gadget-context-derive",
- "gadget-contexts",
- "gadget-crypto",
- "gadget-crypto-tangle-pair-signer",
- "gadget-keystore",
- "gadget-std",
- "gadget-testing-utils",
  "serde",
  "tangle-subxt",
  "tempfile",
@@ -2575,9 +3037,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "blueprint-std"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "colored",
+ "num-traits",
+ "rand 0.8.5",
+ "thiserror 2.0.12",
+]
+
+[[package]]
 name = "blueprint-tangle-extra"
 version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
 dependencies = [
  "blueprint-core",
  "bytes",
@@ -2592,6 +3065,43 @@ dependencies = [
  "tangle-subxt",
  "thiserror 2.0.12",
  "tower",
+]
+
+[[package]]
+name = "blueprint-tangle-testing-utils"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "alloy-primitives 0.8.23",
+ "alloy-signer-local",
+ "blueprint-chain-setup",
+ "blueprint-client-tangle",
+ "blueprint-contexts",
+ "blueprint-core",
+ "blueprint-core-testing-utils",
+ "blueprint-crypto-tangle-pair-signer",
+ "blueprint-keystore",
+ "blueprint-runner",
+ "blueprint-std",
+ "blueprint-tangle-extra",
+ "futures",
+ "sp-core",
+ "tangle-subxt",
+ "tempfile",
+ "tnt-core-bytecode",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "blueprint-testing-utils"
+version = "0.1.0"
+source = "git+https://github.com/tangle-network/blueprint#88dce626367a760305dab98934f17825f1647fa9"
+dependencies = [
+ "blueprint-anvil-testing-utils",
+ "blueprint-core-testing-utils",
+ "blueprint-tangle-testing-utils",
 ]
 
 [[package]]
@@ -4149,9 +4659,9 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "342b09ea23e087717542308a865984555782302855f29427540bbe02d5e8a28a"
+checksum = "478c837c611bc2a9fdeec08f85a5b198bb4e0bbdb3069f02443d2291383a7b42"
 dependencies = [
  "cc",
  "cxxbridge-cmd",
@@ -4163,9 +4673,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f3ff8c449a5074983677c19c894eadc62b6a82ade4d6316547798eb79342ae5"
+checksum = "90e56a63d906813dda6f5112ad67a4768fadd30d0e6600128c79f852e37bebed"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -4177,9 +4687,9 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40399fddbf3977647bfff7453dacffc6b5701b19a282a283369a870115d0a049"
+checksum = "a5fff7916bbde05c2db99469f09dcfaf203bf25b096ccbf4e761a04792412e10"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -4190,15 +4700,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9161673896b799047e79a245927e7921787ad016eed6770227f3f23de2746c7"
+checksum = "4336c994ee47479f439b61a9723ed894ab4551d91e0f217c1e84515d57ea3d4f"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dff513230582d396298cc00e8fb3d9a752822f85137c323fac4227ac5be6c268"
+checksum = "4212f144792e9bc9d6891e369f87cc3adb7387a552993df8767d352482b3f88a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5115,6 +5625,8 @@ dependencies = [
  "clap",
  "color-eyre",
  "dockworker",
+ "hex",
+ "hex-literal 1.0.0",
  "lazy_static",
  "serde",
  "serde_json",
@@ -6167,516 +6679,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gadget-anvil-testing-utils"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-primitives 0.8.23",
- "alloy-provider",
- "alloy-rpc-types",
- "alloy-rpc-types-eth",
- "alloy-transport",
- "blueprint-core",
- "url",
-]
-
-[[package]]
-name = "gadget-chain-setup"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-chain-setup-anvil",
- "gadget-chain-setup-common",
- "gadget-chain-setup-tangle",
-]
-
-[[package]]
-name = "gadget-chain-setup-anvil"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-contract",
- "alloy-provider",
- "alloy-rpc-types",
- "alloy-rpc-types-eth",
- "blueprint-core",
- "gadget-core-testing-utils",
- "gadget-keystore",
- "gadget-std",
- "serde",
- "serde_json",
- "tempfile",
- "testcontainers",
- "thiserror 2.0.12",
- "tokio",
-]
-
-[[package]]
-name = "gadget-chain-setup-common"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-signer-local",
- "blueprint-tangle-extra",
- "color-eyre",
- "gadget-clients",
- "gadget-contexts",
- "gadget-crypto",
- "gadget-crypto-tangle-pair-signer",
- "gadget-keystore",
- "gadget-networking",
- "gadget-std",
- "sp-core",
- "tangle-subxt",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-chain-setup-tangle"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-json-abi",
- "alloy-network",
- "alloy-primitives 0.8.23",
- "alloy-provider",
- "alloy-rpc-types",
- "alloy-rpc-types-eth",
- "alloy-signer-local",
- "alloy-sol-types 0.8.23",
- "alloy-transport",
- "blueprint-core",
- "blueprint-tangle-extra",
- "cargo_metadata 0.18.1",
- "color-eyre",
- "dialoguer",
- "dirs 6.0.0",
- "gadget-chain-setup-common",
- "gadget-clients",
- "gadget-contexts",
- "gadget-crypto",
- "gadget-crypto-tangle-pair-signer",
- "gadget-keystore",
- "gadget-networking",
- "gadget-std",
- "indicatif",
- "reqwest 0.12.15",
- "serde_json",
- "sp-core",
- "tangle-subxt",
- "thiserror 2.0.12",
- "tracing",
-]
-
-[[package]]
-name = "gadget-client-core"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "auto_impl",
- "gadget-std",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-client-eigenlayer"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-contract",
- "alloy-network",
- "alloy-primitives 0.8.23",
- "alloy-provider",
- "alloy-transport",
- "blueprint-evm-extra",
- "blueprint-runner",
- "eigensdk",
- "gadget-client-core",
- "gadget-std",
- "num-bigint",
- "thiserror 2.0.12",
- "tokio",
- "tokio-util",
- "url",
-]
-
-[[package]]
-name = "gadget-client-evm"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-consensus",
- "alloy-json-rpc",
- "alloy-network",
- "alloy-primitives 0.8.23",
- "alloy-provider",
- "alloy-pubsub",
- "alloy-rlp",
- "alloy-rpc-types",
- "alloy-rpc-types-eth",
- "alloy-transport",
- "blueprint-core",
- "gadget-client-core",
- "gadget-rpc-calls",
- "gadget-std",
- "hex",
- "serde",
- "serde_json",
- "thiserror 2.0.12",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "gadget-client-tangle"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "auto_impl",
- "blueprint-core",
- "blueprint-runner",
- "gadget-client-core",
- "gadget-crypto-sp-core",
- "gadget-keystore",
- "gadget-std",
- "serde",
- "serde_json",
- "sp-core",
- "tangle-subxt",
- "thiserror 2.0.12",
- "tokio",
-]
-
-[[package]]
-name = "gadget-clients"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-client-core",
- "gadget-client-eigenlayer",
- "gadget-client-evm",
- "gadget-client-tangle",
- "gadget-std",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-context-derive"
-version = "0.3.1"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.100",
-]
-
-[[package]]
-name = "gadget-contexts"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "blueprint-runner",
- "gadget-clients",
- "gadget-keystore",
- "gadget-networking",
- "gadget-std",
- "tangle-subxt",
-]
-
-[[package]]
-name = "gadget-core-testing-utils"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "blueprint-core",
- "blueprint-router",
- "blueprint-runner",
- "cargo_toml",
- "gadget-clients",
- "gadget-keystore",
- "thiserror 2.0.12",
- "tracing",
- "tracing-subscriber 0.3.19",
- "url",
-]
-
-[[package]]
-name = "gadget-crypto"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-crypto-bls",
- "gadget-crypto-bn254",
- "gadget-crypto-core",
- "gadget-crypto-ed25519",
- "gadget-crypto-hashing",
- "gadget-crypto-k256",
- "gadget-crypto-sp-core",
- "gadget-crypto-sr25519",
- "gadget-crypto-tangle-pair-signer",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-bls"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "ark-serialize 0.5.0",
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "paste",
- "serde",
- "serde_bytes",
- "thiserror 2.0.12",
- "tnt-bls",
-]
-
-[[package]]
-name = "gadget-crypto-bn254"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "ark-bn254",
- "ark-ec 0.5.0",
- "ark-ff 0.5.0",
- "ark-serialize 0.5.0",
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "num-bigint",
- "num-traits",
- "serde",
- "serde_bytes",
- "sha2 0.10.8",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-core"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "clap",
- "gadget-std",
- "serde",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-ed25519"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "ed25519-zebra",
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "serde",
- "serde_bytes",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-hashing"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "blake3",
- "gadget-std",
- "sha2 0.10.8",
- "sha3",
-]
-
-[[package]]
-name = "gadget-crypto-k256"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-primitives 0.8.23",
- "alloy-signer-local",
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "k256",
- "serde",
- "serde_bytes",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-sp-core"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "paste",
- "serde",
- "serde_bytes",
- "sp-core",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-sr25519"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "schnorrkel",
- "serde",
- "serde_bytes",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-crypto-tangle-pair-signer"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-primitives 0.8.23",
- "alloy-signer-local",
- "gadget-crypto-core",
- "gadget-crypto-sp-core",
- "gadget-std",
- "k256",
- "serde",
- "sp-core",
- "sp-runtime",
- "tangle-subxt",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-keystore"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-network",
- "alloy-primitives 0.8.23",
- "alloy-signer",
- "alloy-signer-local",
- "ark-bn254",
- "ark-ec 0.5.0",
- "ark-ff 0.5.0",
- "ark-serialize 0.5.0",
- "blake3",
- "ed25519-zebra",
- "eigensdk",
- "gadget-crypto",
- "gadget-std",
- "hex",
- "k256",
- "parking_lot",
- "paste",
- "ripemd",
- "rust-bls-bn254",
- "schnorrkel",
- "serde",
- "serde_bytes",
- "serde_json",
- "sp-core",
- "sp-io",
- "tangle-subxt",
- "thiserror 2.0.12",
- "tnt-bls",
- "tokio",
- "zeroize",
-]
-
-[[package]]
-name = "gadget-networking"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-primitives 0.8.23",
- "anyhow",
- "auto_impl",
- "bincode",
- "blake3",
- "crossbeam-channel",
- "dashmap",
- "futures",
- "gadget-crypto",
- "gadget-crypto-core",
- "gadget-std",
- "hex",
- "itertools 0.14.0",
- "k256",
- "libp2p",
- "libsecp256k1",
- "lru-mem",
- "parking_lot",
- "serde",
- "serde_json",
- "thiserror 2.0.12",
- "tokio",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "gadget-rpc-calls"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "metrics",
-]
-
-[[package]]
-name = "gadget-std"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "colored",
- "num-traits",
- "rand 0.8.5",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "gadget-tangle-testing-utils"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "alloy-primitives 0.8.23",
- "alloy-signer-local",
- "blueprint-core",
- "blueprint-runner",
- "blueprint-tangle-extra",
- "futures",
- "gadget-chain-setup",
- "gadget-client-tangle",
- "gadget-contexts",
- "gadget-core-testing-utils",
- "gadget-crypto-tangle-pair-signer",
- "gadget-keystore",
- "gadget-std",
- "sp-core",
- "tangle-subxt",
- "tempfile",
- "tnt-core-bytecode",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "gadget-testing-utils"
-version = "0.1.0"
-source = "git+https://github.com/tangle-network/blueprint#7d21230499413638c4b5c2df1289ca0bcd48e78d"
-dependencies = [
- "gadget-anvil-testing-utils",
- "gadget-core-testing-utils",
- "gadget-tangle-testing-utils",
-]
-
-[[package]]
 name = "generator"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6968,6 +6970,12 @@ name = "hex-literal"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
+
+[[package]]
+name = "hex-literal"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcaaec4551594c969335c98c903c1397853d4198408ea609190f420500f6be71"
 
 [[package]]
 name = "hex_fmt"
@@ -11805,7 +11813,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b57bc055fa389372ec5fc0001b99aeffd50f3fd379280ce572d935189bb58dd8"
 dependencies = [
  "bitvec",
- "hex-literal",
+ "hex-literal 0.4.1",
  "log",
  "parity-scale-codec",
  "polkadot-core-primitives",
@@ -11832,7 +11840,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6bb20b75d33212150242d39890d7ededab55f1084160c337f15d0eb8ca8c3ad4"
 dependencies = [
  "bitvec",
- "hex-literal",
+ "hex-literal 0.4.1",
  "log",
  "parity-scale-codec",
  "polkadot-core-primitives",
@@ -14506,7 +14514,7 @@ dependencies = [
  "ethabi-decode",
  "frame-support",
  "frame-system",
- "hex-literal",
+ "hex-literal 0.4.1",
  "parity-scale-codec",
  "polkadot-parachain-primitives",
  "scale-info",
@@ -14530,7 +14538,7 @@ dependencies = [
  "ethabi-decode",
  "ethbloom",
  "ethereum-types",
- "hex-literal",
+ "hex-literal 0.4.1",
  "parity-bytes",
  "parity-scale-codec",
  "rlp",
@@ -14614,7 +14622,7 @@ version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3984b98465af1d862d4e87ba783e1731f2a3f851b148d6cb98d526cebd351185"
 dependencies = [
- "hex-literal",
+ "hex-literal 0.4.1",
  "snowbridge-beacon-primitives",
  "snowbridge-core",
  "sp-core",
@@ -14655,7 +14663,7 @@ version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1f251e579b3d3d93cf833c8e503122808742dee33e7ea53b0f292a76c024d66"
 dependencies = [
- "hex-literal",
+ "hex-literal 0.4.1",
  "snowbridge-beacon-primitives",
  "snowbridge-core",
  "sp-core",
@@ -14713,7 +14721,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aefe74eafeac92e1d9e46b7bb76ec297f6182b4a023f7e7eb7eb8be193f93bef"
 dependencies = [
  "frame-support",
- "hex-literal",
+ "hex-literal 0.4.1",
  "log",
  "parity-scale-codec",
  "scale-info",
@@ -16288,9 +16296,9 @@ checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "tempfile"
-version = "3.19.0"
+version = "3.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "488960f40a3fd53d72c2a29a58722561dee8afdd175bd88e3db4677d7b2ba600"
+checksum = "7437ac7763b9b123ccf33c338a5cc1bac6f69b45a136c19bdd8a65e3916435bf"
 dependencies = [
  "fastrand",
  "getrandom 0.3.2",

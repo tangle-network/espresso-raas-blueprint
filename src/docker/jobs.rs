@@ -1,4 +1,5 @@
 use blueprint_sdk as sdk;
+use blueprint_sdk::tangle::extract::Caller;
 
 use crate::{RollupConfig, RollupConfigParams};
 use anyhow::{Result, anyhow};
@@ -7,6 +8,7 @@ use uuid::Uuid;
 
 /// Create a new Docker-based rollup
 pub async fn create_docker_rollup(
+    Caller(caller): Caller,
     ServiceId(service_id): ServiceId,
     TangleArg(List(config_bytes)): TangleArg<List<u8>>,
 ) -> Result<TangleResult<bool>> {
@@ -24,7 +26,8 @@ pub async fn create_docker_rollup(
     sdk::info!("Docker rollup config: {:?}", config);
 
     // Create a unique VM ID
-    let rollup_id = Uuid::new_v4().to_string();
+    // let rollup_id = Uuid::new_v4().to_string();
+    let rollup_id = hex::encode(caller.0);
     let vm_id = format!("docker-rollup-{}-{}", service_id, rollup_id);
 
     // Create and start the Docker-based rollup

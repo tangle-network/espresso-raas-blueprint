@@ -369,3 +369,9 @@ impl RollupManager {
         Ok(())
     }
 }
+
+impl Default for RollupManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}

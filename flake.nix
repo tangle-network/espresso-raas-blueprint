@@ -64,6 +64,7 @@
 
             pkgs.cargo-nextest
             pkgs.cargo-expand
+            pkgs.yarn
           ];
 
           packages = [ ];

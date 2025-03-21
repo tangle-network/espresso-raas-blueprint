@@ -1,4 +1,5 @@
 use blueprint_sdk as sdk;
+use blueprint_sdk::tangle::extract::List;
 
 use sdk::macros::context::{ServicesContext, TangleClientContext};
 use sdk::runner::config::BlueprintEnvironment;
@@ -52,20 +53,63 @@ impl NetworkType {
 }
 
 // Serializable rollup configuration for job parameters
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct RollupConfigParams {
     /// Chain ID
     pub chain_id: u64,
     /// Initial chain owner
-    pub initial_chain_owner: String,
+    pub initial_chain_owner: [u8; 20],
     /// Validators
-    pub validators: Vec<String>,
+    pub validators: List<[u8; 20]>,
     /// Batch poster address
-    pub batch_poster_address: String,
+    pub batch_poster_address: [u8; 20],
     /// Batch poster manager
-    pub batch_poster_manager: String,
+    pub batch_poster_manager: [u8; 20],
     /// Is mainnet
     pub is_mainnet: bool,
+}
+
+impl std::fmt::Debug for RollupConfigParams {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RollupConfigParams")
+            .field("chain_id", &self.chain_id)
+            .field(
+                "initial_chain_owner",
+                &hex::encode(self.initial_chain_owner),
+            )
+            .field(
+                "validators",
+                &self
+                    .validators
+                    .0
+                    .iter()
+                    .map(hex::encode)
+                    .collect::<Vec<_>>(),
+            )
+            .field(
+                "batch_poster_address",
+                &hex::encode(self.batch_poster_address),
+            )
+            .field(
+                "batch_poster_manager",
+                &hex::encode(self.batch_poster_manager),
+            )
+            .field("is_mainnet", &self.is_mainnet)
+            .finish()
+    }
+}
+
+impl Clone for RollupConfigParams {
+    fn clone(&self) -> Self {
+        Self {
+            chain_id: self.chain_id,
+            initial_chain_owner: self.initial_chain_owner,
+            validators: List(self.validators.0.clone()),
+            batch_poster_address: self.batch_poster_address,
+            batch_poster_manager: self.batch_poster_manager,
+            is_mainnet: self.is_mainnet,
+        }
+    }
 }
 
 /// Rollup configuration
@@ -74,13 +118,13 @@ pub struct RollupConfig {
     /// Chain ID
     pub chain_id: u64,
     /// Initial chain owner
-    pub initial_chain_owner: String,
+    pub initial_chain_owner: [u8; 20],
     /// Validators
-    pub validators: Vec<String>,
+    pub validators: Vec<[u8; 20]>,
     /// Batch poster address
-    pub batch_poster_address: String,
+    pub batch_poster_address: [u8; 20],
     /// Batch poster manager
-    pub batch_poster_manager: String,
+    pub batch_poster_manager: [u8; 20],
     /// Is mainnet
     pub network: NetworkType,
 }
@@ -91,7 +135,7 @@ impl From<RollupConfigParams> for RollupConfig {
         Self {
             chain_id: params.chain_id,
             initial_chain_owner: params.initial_chain_owner,
-            validators: params.validators,
+            validators: params.validators.0,
             batch_poster_address: params.batch_poster_address,
             batch_poster_manager: params.batch_poster_manager,
             network: if params.is_mainnet {

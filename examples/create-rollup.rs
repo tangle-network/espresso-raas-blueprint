@@ -5,7 +5,7 @@ use blueprint_sdk::{
 };
 use clap::Parser;
 use dotenv::dotenv;
-use espresso_raas_blueprint::{create_rollup, RollupConfig, RollupConfigParams};
+use espresso_raas_blueprint::{RollupConfig, RollupConfigParams, create_rollup};
 use uuid::Uuid;
 
 #[derive(Parser, Debug)]
