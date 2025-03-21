@@ -1,12 +1,9 @@
+use blueprint_sdk as sdk;
+
 use crate::docker::container::{DockerComposeManager, DockerComposeOptions};
-use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use anyhow::{Result, anyhow};
+use sdk::info;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tracing::{error, info};
-use uuid::Uuid;
 
 /// Connect Docker with the Espresso configuration generator
 pub struct EspressoDockerManager {

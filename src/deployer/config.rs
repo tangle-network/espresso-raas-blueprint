@@ -1,7 +1,9 @@
+use blueprint_sdk as sdk;
+
 use anyhow::Result;
+use sdk::info;
 use std::fs;
 use std::path::{Path, PathBuf};
-use tracing::info;
 
 /// Configuration generator for Espresso node
 pub struct ConfigGenerator {
