@@ -298,6 +298,19 @@ impl RollupDeployer {
         info!("Deploying rollup proxy");
         let dir = &self.config.workspace_dir.join("nitro-contracts");
 
+        // Read deployment json file for additional addresses if needed
+        let deployment_json_path = dir.join("espresso-deployments/arbSepolia.json");
+        if !deployment_json_path.exists() {
+            error!(
+                "Deployment JSON not found at {}",
+                deployment_json_path.display()
+            );
+            return Err(anyhow!("Deployment JSON not found"));
+        }
+
+        let deployment_json = fs::read_to_string(&deployment_json_path)?;
+        let deployment = serde_json::from_str::<serde_json::Value>(&deployment_json)?;
+
         // Run deployment script
         let output = Command::new("npx")
             .current_dir(dir)
@@ -317,19 +330,9 @@ impl RollupDeployer {
         let output_str = String::from_utf8_lossy(&output.stdout);
 
         // Extract addresses and block number from output
+        let upgrade_executor = self.extract_upgrade_executor_address(&deployment)?;
         let rollup_proxy = self.extract_rollup_proxy_address(&output_str)?;
-        let upgrade_executor = self.extract_upgrade_executor_address(&output_str)?;
         let deployment_block = self.extract_deployment_block(&output_str)?;
-
-        // Read deployment json file for additional addresses if needed
-        let deployment_json_path = dir.join("espresso-deployments/arbSepolia.json");
-        if deployment_json_path.exists() {
-            info!(
-                "Deployment JSON found at {}",
-                deployment_json_path.display()
-            );
-            // Here you could parse additional addresses if needed
-        }
 
         Ok((rollup_proxy, upgrade_executor, deployment_block))
     }
@@ -364,29 +367,22 @@ impl RollupDeployer {
     }
 
     /// Extract the upgrade executor address from the deployments file
-    fn extract_upgrade_executor_address(&self, content: &str) -> Result<String> {
-        // In a real implementation, you would use proper JSON parsing
-        if let Some(pos_start) = content.find("\"upgradeExecutor\":") {
-            if let Some(pos_addr_start) = content[pos_start..].find("\"address\":") {
-                let addr_start = pos_start + pos_addr_start + 11; // Skip past "address": "
-                if let Some(pos_addr_end) = content[addr_start..].find("\"") {
-                    let address = &content[addr_start..addr_start + pos_addr_end];
-                    return Ok(address.to_string());
-                }
-            }
-        }
-
-        Err(anyhow!(
-            "Could not extract upgrade executor address from deployments file"
-        ))
+    fn extract_upgrade_executor_address(&self, content: &serde_json::Value) -> Result<String> {
+        content
+            .get("UpgradeExecutor")
+            .and_then(|executor| executor.as_str())
+            .map(|address| address.to_string())
+            .ok_or_else(|| {
+                anyhow!("Could not extract upgrade executor address from deployments file")
+            })
     }
 
     /// Extract the deployment block number from the output
     fn extract_deployment_block(&self, output: &str) -> Result<u64> {
         // Simplified implementation
         for line in output.lines() {
-            if line.contains("Deployment block:") {
-                let parts: Vec<&str> = line.split("Deployment block:").collect();
+            if line.contains("All deployed at block number:") {
+                let parts: Vec<&str> = line.split("All deployed at block number:").collect();
                 if parts.len() > 1 {
                     let block_str = parts[1].trim();
                     return Ok(block_str.parse()?);
