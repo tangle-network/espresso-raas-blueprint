@@ -1,12 +1,11 @@
-use crate::{
-    docker::rollup::{RollupManager, RollupStatus},
-    RollupConfig,
-};
-use anyhow::{anyhow, Result};
+use blueprint_sdk as sdk;
+
+use crate::{RollupConfig, docker::rollup::RollupManager};
+use anyhow::{Result, anyhow};
 use lazy_static::lazy_static;
+use sdk::{error, info};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use tracing::{error, info};
 
 // Singleton for managing rollups
 lazy_static! {

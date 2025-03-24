@@ -22,9 +22,14 @@ contract EspressoRaaSBlueprint is BlueprintServiceManagerBase {
 
     // Mapping from serviceId to rollup configurations
     mapping(uint64 => RollupConfig) public rollups;
-    
+
     // Events
-    event RollupCreated(uint64 indexed serviceId, uint256 chainId, address initialChainOwner, bool isMainnet);
+    event RollupCreated(
+        uint64 indexed serviceId,
+        uint256 chainId,
+        address initialChainOwner,
+        bool isMainnet
+    );
     event RollupStarted(uint64 indexed serviceId, uint256 chainId);
     event RollupStopped(uint64 indexed serviceId, uint256 chainId);
 
@@ -39,13 +44,7 @@ contract EspressoRaaSBlueprint is BlueprintServiceManagerBase {
     function onRegister(
         ServiceOperators.OperatorPreferences calldata operator,
         bytes calldata registrationInputs
-    )
-    external
-    payable
-    virtual
-    override
-    onlyFromMaster
-    {
+    ) external payable virtual override onlyFromMaster {
         // Validate that the operator has the necessary capabilities
         // For now, we don't need any specific validation
     }
@@ -53,45 +52,9 @@ contract EspressoRaaSBlueprint is BlueprintServiceManagerBase {
     /**
      * @dev Hook for service instance requests.
      */
-    function onRequest(ServiceOperators.RequestParams calldata params) 
-    external 
-    payable 
-    virtual 
-    override 
-    onlyFromMaster
-    {
-        // Extract rollup configuration from params
-        (
-            uint256 chainId,
-            address initialChainOwner,
-            address[] memory validators,
-            address batchPosterAddress,
-            address batchPosterManager,
-            bool isMainnet
-        ) = abi.decode(params.requestInputs, (uint256, address, address[], address, address, bool));
-        
-        // If deploying to mainnet, ensure chainId is >= 1000000 to avoid conflicts
-        if (isMainnet) {
-            require(chainId >= 1000000, "Mainnet chain IDs must be >= 1000000");
-        } else {
-            require(chainId < 1000000, "Testnet chain IDs must be < 1000000");
-        }
-        
-        // Store rollup configuration
-        rollups[params.requestId] = RollupConfig({
-            chainId: chainId,
-            initialChainOwner: initialChainOwner,
-            validators: validators,
-            batchPosterAddress: batchPosterAddress,
-            batchPosterManager: batchPosterManager,
-            isActive: false,
-            createdAt: block.timestamp,
-            isMainnet: isMainnet
-        });
-        
-        // Emit event
-        emit RollupCreated(params.requestId, chainId, initialChainOwner, isMainnet);
-    }
+    function onRequest(
+        ServiceOperators.RequestParams calldata params
+    ) external payable virtual override onlyFromMaster {}
 
     /**
      * @dev Hook for handling job result.
@@ -103,14 +66,53 @@ contract EspressoRaaSBlueprint is BlueprintServiceManagerBase {
         ServiceOperators.OperatorPreferences calldata operator,
         bytes calldata inputs,
         bytes calldata outputs
-    )
-    external
-    payable
-    virtual
-    override
-    onlyFromMaster
-    {
+    ) external payable virtual override onlyFromMaster {
         if (job == CREATE_ROLLUP_JOB) {
+            // Extract rollup configuration from params
+            (
+                uint256 chainId,
+                address initialChainOwner,
+                address[] memory validators,
+                address batchPosterAddress,
+                address batchPosterManager,
+                bool isMainnet
+            ) = abi.decode(
+                    inputs,
+                    (uint256, address, address[], address, address, bool)
+                );
+
+            // If deploying to mainnet, ensure chainId is >= 1000000 to avoid conflicts
+            if (isMainnet) {
+                require(
+                    chainId >= 1000000,
+                    "Mainnet chain IDs must be >= 1000000"
+                );
+            } else {
+                require(
+                    chainId < 1000000,
+                    "Testnet chain IDs must be < 1000000"
+                );
+            }
+
+            // Store rollup configuration
+            rollups[serviceId] = RollupConfig({
+                chainId: chainId,
+                initialChainOwner: initialChainOwner,
+                validators: validators,
+                batchPosterAddress: batchPosterAddress,
+                batchPosterManager: batchPosterManager,
+                isActive: false,
+                createdAt: block.timestamp,
+                isMainnet: isMainnet
+            });
+
+            // Emit event
+            emit RollupCreated(
+                serviceId,
+                chainId,
+                initialChainOwner,
+                isMainnet
+            );
             // Handle rollup creation result
             bool success = abi.decode(outputs, (bool));
             if (success) {
@@ -137,11 +139,9 @@ contract EspressoRaaSBlueprint is BlueprintServiceManagerBase {
     /**
      * @dev Converts a public key to an operator address.
      */
-    function operatorAddressFromPublicKey(bytes calldata publicKey) 
-    internal 
-    pure 
-    returns (address operator) 
-    {
+    function operatorAddressFromPublicKey(
+        bytes calldata publicKey
+    ) internal pure returns (address operator) {
         return address(uint160(uint256(keccak256(publicKey))));
     }
-} 
+}

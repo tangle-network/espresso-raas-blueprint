@@ -1,10 +1,12 @@
+use blueprint_sdk as sdk;
+
 use crate::RollupConfig;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
+use sdk::{error, info};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
-use tracing::{error, info};
 
 // Constants for deployment
 const NITRO_CONTRACTS_REPO: &str = "https://github.com/EspressoSystems/nitro-contracts.git";
@@ -17,10 +19,10 @@ pub struct DeploymentConfig {
     pub private_key: String,
     pub arbiscan_api_key: String,
     pub chain_id: u64,
-    pub initial_chain_owner: String,
-    pub validators: Vec<String>,
-    pub batch_poster_address: String,
-    pub batch_poster_manager: String,
+    pub initial_chain_owner: [u8; 20],
+    pub validators: Vec<[u8; 20]>,
+    pub batch_poster_address: [u8; 20],
+    pub batch_poster_manager: [u8; 20],
     pub workspace_dir: PathBuf,
 }
 
@@ -35,10 +37,10 @@ impl DeploymentConfig {
             private_key: private_key.to_string(),
             arbiscan_api_key: arbiscan_api_key.to_string(),
             chain_id: rollup_config.chain_id,
-            initial_chain_owner: rollup_config.initial_chain_owner.clone(),
-            validators: rollup_config.validators.iter().map(|v| v.clone()).collect(),
-            batch_poster_address: rollup_config.batch_poster_address.clone(),
-            batch_poster_manager: rollup_config.batch_poster_manager.clone(),
+            initial_chain_owner: rollup_config.initial_chain_owner,
+            validators: rollup_config.validators.to_vec(),
+            batch_poster_address: rollup_config.batch_poster_address,
+            batch_poster_manager: rollup_config.batch_poster_manager,
             workspace_dir,
         }
     }
@@ -158,33 +160,13 @@ impl RollupDeployer {
         info!("Installing yarn dependencies");
         self.run_command("yarn", &["install"], dir)?;
 
-        // Install forge dependencies
         info!("Installing forge dependencies");
         self.run_command("forge", &["install"], dir)?;
 
-        // Clean any previous builds
-        info!("Cleaning previous builds with forge clean");
-        self.run_command("forge", &["clean"], dir)?;
+        info!("Building contracts with yarn build:all");
+        self.run_command("yarn", &["build:all"], dir)?;
 
-        // Build using forge directly, skipping tests
-        info!("Building contracts with forge build --skip test");
-        let output = Command::new("forge")
-            .current_dir(dir)
-            .args(["build", "--skip", "test"])
-            .output()?;
-
-        if !output.status.success() {
-            let err = String::from_utf8_lossy(&output.stderr);
-            // Log but don't treat warnings as errors
-            if err.contains("Warning:") && !err.contains("Error:") {
-                info!("Build completed with warnings: {}", err);
-            } else {
-                error!("Forge build failed: {}", err);
-                return Err(anyhow!("Forge build failed: {}", err));
-            }
-        } else {
-            info!("Contracts built successfully with forge build");
-        }
+        info!("Contracts built successfully");
 
         Ok(())
     }
@@ -234,12 +216,21 @@ impl RollupDeployer {
 
         // Replace placeholder values with actual config
         let config = template
-            .replace("OWNER_ADDRESS", &self.config.initial_chain_owner)
+            .replace(
+                "OWNER_ADDRESS",
+                &hex::encode(self.config.initial_chain_owner),
+            )
             .replace("YOUR_CHAIN_ID", &self.config.chain_id.to_string())
             .replace("ChainID", &self.config.chain_id.to_string())
-            .replace("YOUR_OWNED_ADDRESS", &self.config.initial_chain_owner)
-            .replace("AN_OWNED_ADDRESS", &self.config.validators[0])
-            .replace("ANOTHER_OWNED_ADDRESS", &self.config.batch_poster_address);
+            .replace(
+                "YOUR_OWNED_ADDRESS",
+                &hex::encode(self.config.initial_chain_owner),
+            )
+            .replace("AN_OWNED_ADDRESS", &hex::encode(self.config.validators[0]))
+            .replace(
+                "ANOTHER_OWNED_ADDRESS",
+                &hex::encode(self.config.batch_poster_address),
+            );
 
         fs::write(&config_path, config).map_err(|e| anyhow!("Failed to write config.ts: {}", e))?;
 
@@ -269,8 +260,18 @@ impl RollupDeployer {
         }
 
         // Extract rollup creator address from output
-        let output_str = String::from_utf8_lossy(&output.stdout);
-        self.extract_rollup_creator_address(&output_str)
+        let deployments = dir.join("espresso-deployments");
+        let deployment_json = deployments.join("arbSepolia.json");
+        if deployment_json.exists() {
+            info!("Deployment JSON found at {}", deployment_json.display());
+        } else {
+            error!("Deployment JSON not found at {}", deployment_json.display());
+            return Err(anyhow!("Deployment JSON not found"));
+        }
+        // Read the file and extract the rollup creator address
+        let output_json = fs::read_to_string(&deployment_json)?;
+        let output = serde_json::from_str::<serde_json::Value>(&output_json)?;
+        self.extract_rollup_creator_address(&output)
     }
 
     /// Update .env with the rollup creator address
@@ -334,29 +335,22 @@ impl RollupDeployer {
     }
 
     /// Extract the rollup creator address from the output
-    fn extract_rollup_creator_address(&self, output: &str) -> Result<String> {
-        // This is a simplified implementation - in a real scenario, you would use regex or other parsing methods
-        for line in output.lines() {
-            if line.contains("RollupCreator deployed to") {
-                let parts: Vec<&str> = line.split("RollupCreator deployed to").collect();
-                if parts.len() > 1 {
-                    let address = parts[1].trim();
-                    return Ok(address.to_string());
-                }
-            }
-        }
-
-        Err(anyhow!(
-            "Could not extract rollup creator address from output"
-        ))
+    fn extract_rollup_creator_address(&self, output: &serde_json::Value) -> Result<String> {
+        output
+            .get("RollupCreator")
+            .and_then(|creator| creator.as_str())
+            .map(|address| address.to_string())
+            .ok_or_else(|| anyhow!("Could not extract rollup creator address from output"))
     }
 
     /// Extract the rollup proxy address from the output
     fn extract_rollup_proxy_address(&self, output: &str) -> Result<String> {
         // Simplified implementation
         for line in output.lines() {
-            if line.contains("RollupProxy deployed to") {
-                let parts: Vec<&str> = line.split("RollupProxy deployed to").collect();
+            if line.contains("RollupProxy Contract created at address:") {
+                let parts: Vec<&str> = line
+                    .split("RollupProxy Contract created at address:")
+                    .collect();
                 if parts.len() > 1 {
                     let address = parts[1].trim();
                     return Ok(address.to_string());
