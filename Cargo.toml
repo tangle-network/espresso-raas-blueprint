@@ -25,6 +25,7 @@ lazy_static.workspace = true
 hex.workspace = true
 
 clap = { workspace = true, features = ["derive"], optional = true }
+tnt-core-bytecode = { workspace = true, optional = true }
 
 [dev-dependencies]
 blueprint-sdk = { workspace = true, features = ["std", "testing", "tangle"] }
@@ -32,31 +33,36 @@ color-eyre.workspace = true
 hex-literal.workspace = true
 
 [features]
-examples = ["blueprint-sdk/evm", "dep:clap"]
+examples = ["blueprint-sdk/evm", "dep:clap", "dep:tnt-core-bytecode"]
+
+[[example]]
+name = "deploy-service"
+path = "examples/deploy_service.rs"
+required-features = ["examples"]
 
 [[example]]
 name = "create-rollup"
-path = "examples/create-rollup.rs"
+path = "examples/create_rollup.rs"
 required-features = ["examples"]
 
 [[example]]
 name = "list-rollups"
-path = "examples/list-rollups.rs"
+path = "examples/list_rollups.rs"
 required-features = ["examples"]
 
 [[example]]
 name = "start-rollup"
-path = "examples/start-rollup.rs"
+path = "examples/start_rollup.rs"
 required-features = ["examples"]
 
 [[example]]
 name = "stop-rollup"
-path = "examples/stop-rollup.rs"
+path = "examples/stop_rollup.rs"
 required-features = ["examples"]
 
 [[example]]
 name = "get-status"
-path = "examples/get-status.rs"
+path = "examples/get_status.rs"
 required-features = ["examples"]
 
 [workspace]
@@ -84,6 +90,7 @@ thiserror = "2.0.12"
 color-eyre = "0.6.3"
 anyhow = "1.0.97"
 blueprint-sdk = { git = "https://github.com/tangle-network/blueprint", default-features = false }
+tnt-core-bytecode = { version = "0.4.0", default-features = false }
 chrono = "0.4"
 clap = { version = "4.4", features = ["derive"] }
 dockworker = { git = "https://github.com/tangle-network/dockworker", features = ["docker"] }

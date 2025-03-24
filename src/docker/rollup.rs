@@ -87,8 +87,8 @@ impl RollupManager {
     pub async fn create_rollup(
         &self,
         service_id: u64,
-        rollup_id: String,
-        vm_id: String,
+        rollup_id: &str,
+        vm_id: &str,
         config: RollupConfig,
         workspace_dir: PathBuf,
         config_dir: PathBuf,
@@ -96,8 +96,8 @@ impl RollupManager {
         // Update status to Creating
         let info = RollupInfo {
             service_id,
-            rollup_id: rollup_id.clone(),
-            vm_id: vm_id.clone(),
+            rollup_id: rollup_id.to_string(),
+            vm_id: vm_id.to_string(),
             config: config.clone(),
             status: RollupStatus::Creating,
             created_at: chrono::Utc::now().to_rfc3339(),
@@ -106,7 +106,10 @@ impl RollupManager {
         };
 
         // Store the rollup information
-        self.rollups.write().await.insert(rollup_id.clone(), info);
+        self.rollups
+            .write()
+            .await
+            .insert(rollup_id.to_string(), info);
 
         info!("Deploying contracts for rollup {}", rollup_id);
 
@@ -143,7 +146,7 @@ impl RollupManager {
 
                 // Update status to Failed
                 let mut registry = self.rollups.write().await;
-                if let Some(info) = registry.get_mut(&rollup_id) {
+                if let Some(info) = registry.get_mut(rollup_id) {
                     info.status =
                         RollupStatus::Failed(format!("Contract deployment failed: {}", e));
                 }
@@ -184,7 +187,7 @@ impl RollupManager {
 
                 // Update status to Failed
                 let mut registry = self.rollups.write().await;
-                if let Some(info) = registry.get_mut(&rollup_id) {
+                if let Some(info) = registry.get_mut(rollup_id) {
                     info.status = RollupStatus::Failed(format!("Config generation failed: {}", e));
                 }
 
@@ -194,11 +197,13 @@ impl RollupManager {
 
         // Update status to Created
         let mut registry = self.rollups.write().await;
-        if let Some(info) = registry.get_mut(&rollup_id) {
+        if let Some(info) = registry.get_mut(rollup_id) {
             info.status = RollupStatus::Created;
         }
 
-        Ok(rollup_id)
+        info!("Rollup {} created successfully.", rollup_id);
+
+        Ok(rollup_id.to_string())
     }
 
     /// Start a rollup
@@ -211,11 +216,11 @@ impl RollupManager {
             .clone();
         drop(registry);
 
-        // Update status to Creating
+        // Update status to Starting
         {
             let mut registry = self.rollups.write().await;
             if let Some(info) = registry.get_mut(rollup_id) {
-                info.status = RollupStatus::Creating;
+                info.status = RollupStatus::Starting;
             }
         }
 

@@ -15,8 +15,8 @@ lazy_static! {
 /// Create a new rollup
 pub async fn create_rollup(
     service_id: u64,
-    rollup_id: String,
-    vm_id: String,
+    rollup_id: &str,
+    vm_id: &str,
     config: RollupConfig,
 ) -> Result<bool> {
     info!(
@@ -68,7 +68,30 @@ pub async fn create_rollup(
 }
 
 /// Start a rollup
-pub async fn start_rollup(service_id: u64) -> Result<bool> {
+pub async fn start_rollup(rollup_id: &str) -> Result<bool> {
+    info!("Starting rollup for rollup_id: {}", rollup_id);
+
+    // Get rollup by service ID
+    let rollup = ROLLUP_MANAGER
+        .get_rollup(rollup_id)
+        .await
+        .ok_or_else(|| anyhow!("Rollup not found for rollup_id: {}", rollup_id))?;
+
+    // Start the rollup
+    match ROLLUP_MANAGER.start_rollup(&rollup.rollup_id).await {
+        Ok(_) => {
+            info!("Started rollup with rollup_id: {}", rollup.rollup_id);
+            Ok(true)
+        }
+        Err(e) => {
+            error!("Failed to start rollup: {}", e);
+            Err(anyhow!("Failed to start rollup: {}", e))
+        }
+    }
+}
+
+/// Start a rollup by service ID
+pub async fn start_rollup_by_service_id(service_id: u64) -> Result<bool> {
     info!("Starting rollup for service_id: {}", service_id);
 
     // Get rollup by service ID
@@ -90,8 +113,31 @@ pub async fn start_rollup(service_id: u64) -> Result<bool> {
     }
 }
 
-/// Stop a rollup
-pub async fn stop_rollup(service_id: u64) -> Result<bool> {
+/// Stop a rollup by rollup ID
+pub async fn stop_rollup(rollup_id: &str) -> Result<bool> {
+    info!("Stopping rollup for rollup_id: {}", rollup_id);
+
+    // Get rollup by rollup ID
+    let rollup = ROLLUP_MANAGER
+        .get_rollup(rollup_id)
+        .await
+        .ok_or_else(|| anyhow!("Rollup not found for rollup_id: {}", rollup_id))?;
+
+    // Stop the rollup
+    match ROLLUP_MANAGER.stop_rollup(&rollup.rollup_id).await {
+        Ok(_) => {
+            info!("Stopped rollup with rollup_id: {}", rollup.rollup_id);
+            Ok(true)
+        }
+        Err(e) => {
+            error!("Failed to stop rollup: {}", e);
+            Err(anyhow!("Failed to stop rollup: {}", e))
+        }
+    }
+}
+
+/// Stop a rollup by service ID
+pub async fn stop_rollup_by_service_id(service_id: u64) -> Result<bool> {
     info!("Stopping rollup for service_id: {}", service_id);
 
     // Get rollup by service ID
@@ -113,8 +159,31 @@ pub async fn stop_rollup(service_id: u64) -> Result<bool> {
     }
 }
 
-/// Delete a rollup
-pub async fn delete_rollup(service_id: u64) -> Result<bool> {
+/// Delete a rollup by rollup ID
+pub async fn delete_rollup(rollup_id: &str) -> Result<bool> {
+    info!("Deleting rollup for rollup_id: {}", rollup_id);
+
+    // Get rollup by rollup ID
+    let rollup = ROLLUP_MANAGER
+        .get_rollup(rollup_id)
+        .await
+        .ok_or_else(|| anyhow!("Rollup not found for rollup_id: {}", rollup_id))?;
+
+    // Delete the rollup
+    match ROLLUP_MANAGER.delete_rollup(&rollup.rollup_id).await {
+        Ok(_) => {
+            info!("Deleted rollup with rollup_id: {}", rollup.rollup_id);
+            Ok(true)
+        }
+        Err(e) => {
+            error!("Failed to delete rollup: {}", e);
+            Err(anyhow!("Failed to delete rollup: {}", e))
+        }
+    }
+}
+
+/// Delete a rollup by service ID
+pub async fn delete_rollup_by_service_id(service_id: u64) -> Result<bool> {
     info!("Deleting rollup for service_id: {}", service_id);
 
     // Get rollup by service ID

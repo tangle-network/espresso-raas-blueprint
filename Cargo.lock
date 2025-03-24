@@ -5522,6 +5522,7 @@ dependencies = [
  "lazy_static",
  "serde",
  "serde_json",
+ "tnt-core-bytecode",
  "tokio",
  "uuid 1.16.0",
 ]

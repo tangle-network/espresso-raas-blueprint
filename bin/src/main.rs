@@ -28,8 +28,7 @@ async fn main() -> Result<()> {
 
     // Producer
     let tangle_client = env.tangle_client().await?;
-    let tangle_producer =
-        TangleProducer::finalized_blocks(tangle_client.rpc_client.clone()).await?;
+    let tangle_producer = TangleProducer::best_blocks(tangle_client.rpc_client.clone()).await?;
     // Consumer
     let tangle_consumer = TangleConsumer::new(tangle_client.rpc_client.clone(), st25519_signer);
 

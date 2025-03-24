@@ -183,14 +183,15 @@ impl DockerComposeManager {
             }
         }
 
-        // If the API approach failed, fall back to docker-compose down command
+        // If the API approach failed, fall back to docker compose down command
         if !api_success {
             info!(
-                "Dockworker API failed: {}. Falling back to docker-compose command",
+                "Dockworker API failed: {}. Falling back to docker compose command",
                 api_error
             );
 
-            let output = std::process::Command::new("docker-compose")
+            let output = std::process::Command::new("docker")
+                .arg("compose")
                 .arg("-f")
                 .arg(&self.options.compose_file_path)
                 .arg("-p")
@@ -201,7 +202,7 @@ impl DockerComposeManager {
             if !output.status.success() {
                 let error_msg = String::from_utf8_lossy(&output.stderr);
                 error!(
-                    "Failed to stop containers using docker-compose: {}",
+                    "Failed to stop containers using docker compose: {}",
                     error_msg
                 );
                 return Err(anyhow!("Failed to stop containers: {}", error_msg));
@@ -251,7 +252,8 @@ impl DockerComposeManager {
             Ok(logs)
         } else {
             // Fall back to docker-compose command if container ID not found
-            let output = std::process::Command::new("docker-compose")
+            let output = std::process::Command::new("docker")
+                .arg("compose")
                 .arg("-f")
                 .arg(&self.options.compose_file_path)
                 .arg("-p")
