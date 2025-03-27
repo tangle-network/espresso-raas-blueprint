@@ -92,7 +92,7 @@ anyhow = "1.0.97"
 blueprint-sdk = { git = "https://github.com/tangle-network/blueprint", default-features = false }
 tnt-core-bytecode = { version = "0.4.0", default-features = false }
 chrono = "0.4"
-clap = { version = "4.4", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 dockworker = { git = "https://github.com/tangle-network/dockworker", features = ["docker"] }
 firecracker-rs-sdk = { git = "https://github.com/xuehaonan27/firecracker-rs-sdk", features = ["_rt-tokio"] }
 lazy_static = "1.4"
