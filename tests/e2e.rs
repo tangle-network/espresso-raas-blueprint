@@ -3,7 +3,7 @@ use blueprint_sdk::testing::utils::tangle::harness::SetupServicesOpts;
 use espresso_raas_blueprint::docker::{
     create_docker_rollup, delete_docker_rollup, start_docker_rollup, stop_docker_rollup,
 };
-use espresso_raas_blueprint::{RollupConfigParams, ServiceContext};
+use espresso_raas_blueprint::{NetworkType, RollupConfigParams, ServiceContext};
 use hex_literal::hex;
 
 use sdk::Job;
@@ -31,6 +31,7 @@ async fn test_rollup_creation() -> color_eyre::Result<()> {
         batch_poster_address: hex!("2468ace02468ace02468ace02468ace02468ace0"),
         batch_poster_manager: hex!("1357bdf91357bdf91357bdf91357bdf91357bdf9"),
         is_mainnet: false,
+        network: NetworkType::Geth,
     };
     // Setup service
     let (mut test_env, service_id, _) = harness
@@ -68,11 +69,8 @@ async fn test_rollup_creation() -> color_eyre::Result<()> {
     // Start the test environment
     test_env.start_with_contexts(contexts).await?;
 
-    // Serialize the config for the job input
-    let config_bytes = serde_json::to_vec(&rollup_config)?;
-
     // Submit the create_docker_rollup job (job ID 3)
-    let job_inputs = vec![to_field(config_bytes).unwrap()];
+    let job_inputs = vec![to_field(rollup_config.clone()).unwrap()];
     let job = harness.submit_job(service_id, 0, job_inputs).await?;
 
     // Wait for job execution and verify success
@@ -81,10 +79,16 @@ async fn test_rollup_creation() -> color_eyre::Result<()> {
     // The job should return a boolean success value as true
     assert_eq!(results.service_id, service_id);
 
-    // Expecting a successful creation (true)
+    // Expecting a successful creation of the rollup
     let success_field = results.result[0].clone();
-    let success: bool = from_field(success_field)?;
-    assert!(success, "Rollup creation should succeed");
+    let rollup_id: String = from_field(success_field)?;
+    println!("Rollup ID: {}", rollup_id);
+
+    // Start the rollup
+    let job_inputs = vec![to_field(rollup_id.clone()).unwrap()];
+    let job = harness.submit_job(service_id, 1, job_inputs).await?;
+    let results = harness.wait_for_job_execution(service_id, job).await?;
+    assert_eq!(results.service_id, service_id);
 
     Ok(())
 }

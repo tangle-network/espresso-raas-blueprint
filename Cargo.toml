@@ -19,10 +19,10 @@ chrono.workspace = true
 dockworker.workspace = true
 blueprint-sdk = { workspace = true, features = ["std", "tangle", "tracing", "macros"] }
 serde = { workspace = true, features = ["alloc"] }
-serde_json.workspace = true
+serde_json = { workspace = true, features = ["preserve_order"] }
 uuid = { workspace = true, features = ["v4", "serde"] }
 lazy_static.workspace = true
-hex.workspace = true
+hex = { workspace = true, features = ["serde"] }
 
 clap = { workspace = true, features = ["derive"], optional = true }
 tnt-core-bytecode = { workspace = true, optional = true }

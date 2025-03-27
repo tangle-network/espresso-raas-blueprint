@@ -1,0 +1,11 @@
+[
+  {
+    "chain_id": 42,
+    "initial_chain_owner": "123456789abcdef0123456789abcdef012345678",
+    "validators": ["123456789abcdef0123456789abcdef012345678"],
+    "batch_poster_address": "2468ace02468ace02468ace02468ace02468ace0",
+    "batch_poster_manager": "1357bdf91357bdf91357bdf91357bdf91357bdf9",
+    "is_mainnet": false,
+    "network": "Geth"
+  }
+]

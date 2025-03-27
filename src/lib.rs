@@ -5,6 +5,7 @@ use sdk::macros::context::{ServicesContext, TangleClientContext};
 use sdk::runner::config::BlueprintEnvironment;
 use serde::{Deserialize, Serialize};
 
+mod custom_serde;
 pub mod deployer;
 pub mod docker;
 
@@ -30,8 +31,10 @@ impl ServiceContext {
 }
 
 /// Network type for the rollup
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum NetworkType {
+    #[default]
+    Geth,
     ArbitrumMainnet,
     ArbitrumSepolia,
 }
@@ -39,6 +42,7 @@ pub enum NetworkType {
 impl NetworkType {
     pub fn rpc_url(&self) -> &str {
         match self {
+            NetworkType::Geth => "http://localhost:8545",
             NetworkType::ArbitrumMainnet => "https://arb1.arbitrum.io/rpc",
             NetworkType::ArbitrumSepolia => "https://sepolia-rollup.arbitrum.io/rpc",
         }
@@ -48,6 +52,17 @@ impl NetworkType {
         match self {
             NetworkType::ArbitrumMainnet => 1,        // Ethereum Mainnet
             NetworkType::ArbitrumSepolia => 11155111, // Ethereum Sepolia
+            NetworkType::Geth => 1337,                // Geth
+        }
+    }
+}
+
+impl std::fmt::Display for NetworkType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NetworkType::Geth => write!(f, "geth"),
+            NetworkType::ArbitrumMainnet => write!(f, "arb1"),
+            NetworkType::ArbitrumSepolia => write!(f, "arbSepolia"),
         }
     }
 }
@@ -58,15 +73,21 @@ pub struct RollupConfigParams {
     /// Chain ID
     pub chain_id: u64,
     /// Initial chain owner
+    #[serde(with = "hex::serde")]
     pub initial_chain_owner: [u8; 20],
     /// Validators
+    #[serde(with = "custom_serde::hex_list")]
     pub validators: List<[u8; 20]>,
     /// Batch poster address
+    #[serde(with = "hex::serde")]
     pub batch_poster_address: [u8; 20],
     /// Batch poster manager
+    #[serde(with = "hex::serde")]
     pub batch_poster_manager: [u8; 20],
     /// Is mainnet
     pub is_mainnet: bool,
+    /// Network
+    pub network: NetworkType,
 }
 
 impl std::fmt::Debug for RollupConfigParams {
@@ -95,6 +116,7 @@ impl std::fmt::Debug for RollupConfigParams {
                 &hex::encode(self.batch_poster_manager),
             )
             .field("is_mainnet", &self.is_mainnet)
+            .field("network", &self.network)
             .finish()
     }
 }
@@ -108,6 +130,7 @@ impl Clone for RollupConfigParams {
             batch_poster_address: self.batch_poster_address,
             batch_poster_manager: self.batch_poster_manager,
             is_mainnet: self.is_mainnet,
+            network: self.network.clone(),
         }
     }
 }
@@ -138,11 +161,7 @@ impl From<RollupConfigParams> for RollupConfig {
             validators: params.validators.0,
             batch_poster_address: params.batch_poster_address,
             batch_poster_manager: params.batch_poster_manager,
-            network: if params.is_mainnet {
-                NetworkType::ArbitrumMainnet
-            } else {
-                NetworkType::ArbitrumSepolia
-            },
+            network: params.network,
         }
     }
 }

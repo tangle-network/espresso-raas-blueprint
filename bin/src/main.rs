@@ -11,10 +11,8 @@ use sdk::runner::config::BlueprintEnvironment;
 use sdk::runner::tangle::config::TangleConfig;
 use sdk::tangle::consumer::TangleConsumer;
 use sdk::tangle::producer::TangleProducer;
-use tracing::Instrument;
 
 #[tokio::main]
-#[tracing::instrument(name = "espersso_rass_blueprint", err)]
 async fn main() -> Result<()> {
     setup_log();
 
@@ -45,7 +43,6 @@ async fn main() -> Result<()> {
         .producer(tangle_producer)
         .consumer(tangle_consumer)
         .run()
-        .in_current_span()
         .await;
     if let Err(e) = result {
         sdk::error!("Runner failed! {e:?}");
@@ -57,7 +54,6 @@ pub fn setup_log() {
     use tracing_subscriber::util::SubscriberInitExt;
 
     let _ = tracing_subscriber::fmt::SubscriberBuilder::default()
-        .without_time()
         .with_span_events(tracing_subscriber::fmt::format::FmtSpan::NONE)
         .with_env_filter(
             tracing_subscriber::EnvFilter::builder()

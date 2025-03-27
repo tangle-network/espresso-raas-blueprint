@@ -19,6 +19,7 @@ pub struct DeploymentConfig {
     pub private_key: String,
     pub arbiscan_api_key: String,
     pub chain_id: u64,
+    pub network: String,
     pub initial_chain_owner: [u8; 20],
     pub validators: Vec<[u8; 20]>,
     pub batch_poster_address: [u8; 20],
@@ -41,6 +42,7 @@ impl DeploymentConfig {
             validators: rollup_config.validators.to_vec(),
             batch_poster_address: rollup_config.batch_poster_address,
             batch_poster_manager: rollup_config.batch_poster_manager,
+            network: rollup_config.network.to_string(),
             workspace_dir,
         }
     }
@@ -192,6 +194,7 @@ impl RollupDeployer {
         let env_content = format!(
             "ARBISCAN_API_KEY=\"{}\"\n\
              DEVNET_PRIVKEY=\"{}\"\n\
+             IGNORE_MAX_DATA_SIZE_WARNING=true\n\
              ESPRESSO_TEE_VERIFIER_ADDRESS=\"{}\"\n",
             self.config.arbiscan_api_key, self.config.private_key, TEE_VERIFIER_ADDRESS
         );
@@ -250,7 +253,7 @@ impl RollupDeployer {
             .arg("run")
             .arg("scripts/deployment.ts")
             .arg("--network")
-            .arg("arbSepolia")
+            .arg(&self.config.network)
             .output()?;
 
         if !output.status.success() {
@@ -261,7 +264,7 @@ impl RollupDeployer {
 
         // Extract rollup creator address from output
         let deployments = dir.join("espresso-deployments");
-        let deployment_json = deployments.join("arbSepolia.json");
+        let deployment_json = deployments.join(format!("{}.json", self.config.network));
         if deployment_json.exists() {
             info!("Deployment JSON found at {}", deployment_json.display());
         } else {
@@ -299,7 +302,9 @@ impl RollupDeployer {
         let dir = &self.config.workspace_dir.join("nitro-contracts");
 
         // Read deployment json file for additional addresses if needed
-        let deployment_json_path = dir.join("espresso-deployments/arbSepolia.json");
+        let deployment_json_path = dir
+            .join("espresso-deployments")
+            .join(format!("{}.json", self.config.network));
         if !deployment_json_path.exists() {
             error!(
                 "Deployment JSON not found at {}",
@@ -318,7 +323,7 @@ impl RollupDeployer {
             .arg("run")
             .arg("scripts/createEthRollup.ts")
             .arg("--network")
-            .arg("arbSepolia")
+            .arg(&self.config.network)
             .output()?;
 
         if !output.status.success() {
