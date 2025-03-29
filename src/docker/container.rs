@@ -56,6 +56,12 @@ impl DockerComposeManager {
         }
 
         // Parse the compose file
+        let docker_compose_dir = self.options.compose_file_path.parent().ok_or_else(|| {
+            anyhow!(
+                "Failed to get parent directory of compose file: {}",
+                self.options.compose_file_path.display()
+            )
+        })?;
         let compose_content = std::fs::read_to_string(&self.options.compose_file_path)?;
         let config = ComposeParser::new()
             .parse(&mut compose_content.as_bytes())
@@ -116,7 +122,7 @@ impl DockerComposeManager {
         // Deploy the compose configuration
         let container_ids = self
             .docker
-            .deploy_compose(&mut compose_config)
+            .deploy_compose_with_base_dir(&mut compose_config, docker_compose_dir.to_path_buf())
             .await
             .map_err(|e| anyhow!("Failed to deploy compose configuration: {}", e))?;
 

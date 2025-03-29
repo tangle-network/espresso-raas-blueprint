@@ -35,7 +35,11 @@ impl EspressoDockerManager {
             self.vm_id
         );
 
-        let compose_file_path = self.workspace_dir.join("docker-compose.yml");
+        let compose_file_path = self
+            .workspace_dir
+            .parent()
+            .ok_or_else(|| anyhow!("Failed to get parent directory"))?
+            .join("docker-compose.yml");
 
         // Create Docker compose options
         let options = DockerComposeOptions {

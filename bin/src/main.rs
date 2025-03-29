@@ -1,4 +1,6 @@
 use blueprint_sdk as sdk;
+use blueprint_sdk::tangle::filters::MatchesServiceId;
+use blueprint_sdk::tangle::layers::TangleLayer;
 
 use anyhow::Result;
 use espresso_raas_blueprint as blueprint;
@@ -11,6 +13,7 @@ use sdk::runner::config::BlueprintEnvironment;
 use sdk::runner::tangle::config::TangleConfig;
 use sdk::tangle::consumer::TangleConsumer;
 use sdk::tangle::producer::TangleProducer;
+use tower::filter::FilterLayer;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,12 +33,15 @@ async fn main() -> Result<()> {
     // Consumer
     let tangle_consumer = TangleConsumer::new(tangle_client.rpc_client.clone(), st25519_signer);
 
+    let service_id = env.protocol_settings.tangle()?.service_id.unwrap();
     let context = blueprint::ServiceContext::new(env.clone());
     let router = sdk::Router::new()
         .route(0, blueprint::docker::jobs::create_docker_rollup)
         .route(1, blueprint::docker::jobs::start_docker_rollup)
         .route(2, blueprint::docker::jobs::stop_docker_rollup)
         .route(3, blueprint::docker::jobs::delete_docker_rollup)
+        .layer(TangleLayer)
+        .layer(FilterLayer::new(MatchesServiceId(service_id)))
         .with_context(context);
     sdk::info!("Starting the event watcher ...");
     let result = BlueprintRunner::builder(config, env)

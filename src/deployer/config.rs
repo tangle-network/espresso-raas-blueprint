@@ -150,8 +150,14 @@ impl ConfigGenerator {
         // Read the docker-compose template
         let template = include_str!("config/docker-compose.yml");
 
-        // Write to the workspace directory
-        let output_path = self.workspace_dir.join("docker-compose.yml");
+        // Write to the parent directory of the workspace directory
+        let output_path = self
+            .workspace_dir
+            .parent()
+            .ok_or_else(|| {
+                std::io::Error::new(std::io::ErrorKind::NotFound, "Parent directory not found")
+            })?
+            .join("docker-compose.yml");
         fs::write(&output_path, template)?;
 
         info!("Generated docker-compose.yml at {}", output_path.display());

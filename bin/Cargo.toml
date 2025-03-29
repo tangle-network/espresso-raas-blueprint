@@ -21,6 +21,7 @@ tracing-subscriber = { workspace = true, features = ["env-filter", "fmt"] }
 
 espresso-raas-blueprint.workspace = true
 blueprint-sdk = { workspace = true, features = ["std", "tangle", "tracing"] }
+tower = { workspace = true, features = ["filter"] }
 
 [build-dependencies]
 blueprint-sdk = { workspace = true, features = ["macros", "build"] }

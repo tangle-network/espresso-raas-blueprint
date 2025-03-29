@@ -50,20 +50,6 @@ name = "list-rollups"
 path = "examples/list_rollups.rs"
 required-features = ["examples"]
 
-[[example]]
-name = "start-rollup"
-path = "examples/start_rollup.rs"
-required-features = ["examples"]
-
-[[example]]
-name = "stop-rollup"
-path = "examples/stop_rollup.rs"
-required-features = ["examples"]
-
-[[example]]
-name = "get-status"
-path = "examples/get_status.rs"
-required-features = ["examples"]
 
 [workspace]
 members = ["bin", "."]
@@ -89,7 +75,9 @@ tracing-subscriber = { version = "0.3", default-features = false }
 thiserror = "2.0.12"
 color-eyre = "0.6.3"
 anyhow = "1.0.97"
-blueprint-sdk = { git = "https://github.com/tangle-network/blueprint", default-features = false }
+# blueprint-sdk = { git = "https://github.com/tangle-network/blueprint", default-features = false }
+blueprint-sdk = { path = "../gadget/crates/sdk", default-features = false }
+tower = { version = "0.5.2", default-features = false }
 tnt-core-bytecode = { version = "0.4.0", default-features = false }
 chrono = "0.4"
 clap = { version = "4.4", features = ["derive"] }

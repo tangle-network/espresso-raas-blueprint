@@ -63,7 +63,19 @@ cargo tangle blueprint accept-request --request-id 0 --keystore-uri ./target/key
 11. Run the blueprint:
 
 ```bash
-cargo tangle blueprint run --protocol tangle -k target/keystore
+RUST_LOG=blueprint-rejection=trace,tangle-producer=debug,tangle-consumer=trace,blueprint-router=trace,blueprint-runner=trace,espresso_raas_blueprint=debug,espresso_raas_blueprint_cli=debug ./target/debug/espresso-raas-blueprint-cli run --protocol tangle --blueprint-id 0 --service-id 0 --http-rpc-url http://localhost:9944 --ws-rpc-url ws://localhost:9944 --chain local_testnet --keystore-uri ./target/keystore -vvvv
 ```
 
-Enter the blueprint id and service instance id when prompted. (`0` and `0` respectively)
+12. Create a new Rollup:
+
+```bash
+cargo tangle blueprint submit --blueprint-id 0 --service-id 0 --keystore-uri ./target/keystore --watcher --job 0 --params-file examples/create_rollup.json
+```
+
+13. Start the Rollup:
+
+```bash
+cargo tangle blueprint start --blueprint-id 0 --service-id 0 --keystore-uri ./target/keystore --watcher --job 1
+```
+
+And enter the Rollup ID in the prompt from the previous command.

@@ -132,10 +132,19 @@ read -p "Do you want to run the blueprint now? (y/n) " run_blueprint
 if [ "$run_blueprint" = "y" ]; then
     echo "Running blueprint..."
     echo "Note: Enter '0' for both blueprint ID and service instance ID when prompted"
-    RUST_LOG=info,espersso_rass_blueprint_cli=debug,espersso_rass_blueprint=debug \
-     cargo tangle blueprint run --protocol tangle -k target/keystore
+    RUST_LOG=blueprint-rejection=trace,tangle-producer=debug,tangle-consumer=trace,blueprint-router=trace,blueprint-runner=trace,espresso_raas_blueprint=debug,espresso_raas_blueprint_cli=debug\
+    ./target/debug/espresso-raas-blueprint-cli run --protocol tangle\
+         --blueprint-id 0\
+         --service-id 0\
+        --http-rpc-url http://localhost:9944\
+        --ws-rpc-url ws://localhost:9944\
+        --chain local_testnet\
+        --keystore-uri ./target/keystore -vvvv
+
 else
     echo "Skipping blueprint run"
 fi
 
 echo "Setup complete!"
+
+
