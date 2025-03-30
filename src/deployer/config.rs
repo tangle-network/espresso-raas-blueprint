@@ -56,6 +56,7 @@ impl ConfigGenerator {
         self.copy_and_update_validation_node_config()?;
         self.copy_jwt_file()?;
         self.copy_docker_compose()?;
+        self.make_docker_mounts()?;
 
         info!(
             "Configuration files generated in {}",
@@ -161,6 +162,17 @@ impl ConfigGenerator {
         fs::write(&output_path, template)?;
 
         info!("Generated docker-compose.yml at {}", output_path.display());
+        Ok(())
+    }
+
+    fn make_docker_mounts(&self) -> Result<()> {
+        // Create the docker mounts directory
+        let mounts_dir = self.workspace_dir.parent().ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::NotFound, "Parent directory not found")
+        })?;
+        fs::create_dir_all(mounts_dir.join("wasm"))?;
+        fs::create_dir_all(mounts_dir.join("database"))?;
+        info!("Created docker mounts at {}", mounts_dir.display());
         Ok(())
     }
 }
